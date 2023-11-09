@@ -36,16 +36,34 @@ public class ChatMessage implements Serializable {
 	//TODO: file constructor could be useful here
 	public ChatMessage(String line) {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+		
+		
+		
+		//starts at 2nd char and is length 36
 		try {
-			sender = line.substring(1, 37);
-			
-			//starts at 2nd char and is length 36
-			timestamp = simpleDateFormat.parse(line.substring(1, 37));
-			System.out.println(timestamp);
+			sender = line.substring(1, 36);
+		
+			String userId = "";
+			int i = 39;
+			while (line.charAt(i) != '@') {
+				userId += line.charAt(i);
+				i++;
+			}
+			sender = userId;
+			i++;
+			String date = "";
+			while (line.charAt(i) != ']') {
+				date += line.charAt(i);
+				i++;
+			}
+			timestamp = simpleDateFormat.parse(date);
+			i++;
+			contents = line.substring(i);
 			
 		} catch(Exception e) {
-			System.out.println("Invalid Format");
+			
 		}
+			
 	}
 	
 	public String getId() {

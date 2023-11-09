@@ -1,6 +1,9 @@
 import java.util.List;
+import java.util.Scanner;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class Room {
 	private String id;
@@ -14,11 +17,33 @@ public class Room {
 		for (String userId : users) {
 			this.users.add(userId);
 		}
+		chatHistory = new ChatHistory();
 		empty = this.users.isEmpty();
 	}
 	
 	//TODO: a file constructor could be useful here
 	public Room(String filename) {
+		Scanner scanner = null;
+		try {
+			File file = new File(filename);
+			scanner = new Scanner(file);
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+			creationDate = simpleDateFormat.parse(scanner.nextLine());
+			users = new ArrayList<String>();
+			for (String userId : scanner.nextLine().split(",")) {
+				if (!userId.isEmpty())
+					users.add(userId);
+			}
+			chatHistory = new ChatHistory();
+			while (scanner.hasNextLine()) {
+				chatHistory.addMessage(new ChatMessage(scanner.nextLine()));
+			}
+			empty = this.users.isEmpty();
+		} catch(Exception e) {
+			System.out.println("File not found");
+		}
+		if (scanner != null)
+			scanner.close();
 	}
 	
 	public boolean isEmpty() {
@@ -57,5 +82,21 @@ public class Room {
 	
 	public void setMessageStatus(String messageId, MessageStatus status) {
 		chatHistory.setMessageStatus(messageId, status);
+	}
+	
+	public String toString() {
+		String file = creationDate.toString() + '\n';
+		if (empty)
+			file += '\n';
+		else {
+			for (String userId : users) {
+				file += userId + ',';
+			}
+			file += '\n';
+		}
+		for (ChatMessage message : chatHistory.getMessages()) {
+			file += message.toString() + '\n';
+		}
+		return file;
 	}
 }
