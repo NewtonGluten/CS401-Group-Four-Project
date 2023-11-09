@@ -61,4 +61,24 @@ public class UserStorage {
 		}
 		
 	}
+	
+	//TODO: should this return null for invalid users?
+	public List<String> getUserRooms(String userId) {
+		return userIdRooms.get(userId);
+	}
+	
+	//TODO: should this return null for invalid users?
+	public User getUserId(String userId) {
+		return users.get(userId);
+	}
+	
+	//TODO: how should we handle invalid credentials
+	public void addUser(String userId, String password) {
+		if (userId.contains(":") || password.contains(":"))
+			return;
+		users.putIfAbsent(userId, new User(userId, password, UserRole.Normal));
+		userIdRooms.putIfAbsent(userId, new ArrayList<String>());
+	}
+	
+	
 }
