@@ -23,6 +23,14 @@ public class ChatMessage implements Serializable {
 		this.status = status;
 	}
 	
+	public ChatMessage(String userId, Date timestamp, String contents) {
+		id = UUID.randomUUID().toString();
+		this.timestamp = timestamp;
+		sender = userId;
+		this.contents = contents;
+		status = MessageStatus.Delivered;
+	}
+	
 	public String getId() {
 		return id;
 	}
