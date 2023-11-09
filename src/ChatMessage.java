@@ -3,6 +3,8 @@ import java.util.UUID;
 
 import java.io.Serializable;
 
+import java.text.SimpleDateFormat;
+
 enum MessageStatus {
 	Pending, Delivered
 }
@@ -31,6 +33,21 @@ public class ChatMessage implements Serializable {
 		status = MessageStatus.Delivered;
 	}
 	
+	//TODO: file constructor could be useful here
+	public ChatMessage(String line) {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+		try {
+			sender = line.substring(1, 37);
+			
+			//starts at 2nd char and is length 36
+			timestamp = simpleDateFormat.parse(line.substring(1, 37));
+			System.out.println(timestamp);
+			
+		} catch(Exception e) {
+			System.out.println("Invalid Format");
+		}
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -53,5 +70,9 @@ public class ChatMessage implements Serializable {
 	
 	public void setStatus(MessageStatus status) {
 		this.status = status;
+	}
+	
+	public String toString() {
+		return '[' + id + "][" + sender + '@' + timestamp.toString() + "]:" + contents;
 	}
 }

@@ -37,11 +37,6 @@ public class Room {
 		return users;
 	}
 	
-	//TODO: how does this work
-	public String getLog() {
-		return null;
-	}
-	
 	public List<ChatMessage> getMessages() {
 		return chatHistory.getMessages();
 	}
