@@ -17,6 +17,10 @@ public class Room {
 		empty = this.users.isEmpty();
 	}
 	
+	//TODO: a file constructor could be useful here
+	public Room(String filename) {
+	}
+	
 	public boolean isEmpty() {
 		return empty;
 	}
