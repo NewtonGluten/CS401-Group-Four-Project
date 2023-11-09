@@ -68,7 +68,7 @@ public class UserStorage {
 	}
 	
 	//TODO: should this return null for invalid users?
-	public User getUserId(String userId) {
+	public User getUserById(String userId) {
 		return users.get(userId);
 	}
 	
