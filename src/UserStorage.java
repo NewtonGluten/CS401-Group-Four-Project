@@ -73,12 +73,19 @@ public class UserStorage {
 	}
 	
 	//TODO: how should we handle invalid credentials
-	public void addUser(String userId, String password) {
+	public void addUser(String userId, String password, UserRole role) {
 		if (userId.contains(":") || password.contains(":"))
 			return;
-		users.putIfAbsent(userId, new User(userId, password, UserRole.Normal));
+		users.putIfAbsent(userId, new User(userId, password, role));
 		userIdRooms.putIfAbsent(userId, new ArrayList<String>());
 	}
 	
+	//TODO: does this involve any thread updates or are we doing that outside
+	public void setUserStatus(String userId, UserStatus status) {
+		User user = users.get(userId);
+		if (user == null)
+			return;
+		user.setStatus(status);
+	}
 	
 }
