@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,7 @@ public class Room {
 	private boolean empty;
 	
 	public Room(String[] users) {
+		id = UUID.randomUUID().toString();
 		this.users = new ArrayList<String>();
 		for (String userId : users) {
 			this.users.add(userId);
@@ -22,6 +24,7 @@ public class Room {
 	}
 	
 	public Room(File file) {
+		id = file.getName().substring(0, 36);
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(file);
