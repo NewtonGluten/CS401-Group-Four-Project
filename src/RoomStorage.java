@@ -17,7 +17,7 @@ public class RoomStorage {
 		}
 	}
 	
-	//TODO: not sure if this is correct according to the design
+	//TODO: not sure if this is correct according to the design or if the name is a bit off
 	public List<Room> getRoomsForUser(String userId) {
 		List<Room> userRooms = new ArrayList<Room>();
 		for (String roomId : rooms.keySet()) {
@@ -26,8 +26,10 @@ public class RoomStorage {
 				continue;
 			List<String> users = room.getUsers();
 			for (String id : users) {
-				if (userId.equals(id))
+				if (userId.equals(id)) {
 					userRooms.add(room);
+					break;
+				}
 			}
 		}
 		return userRooms;
@@ -59,17 +61,3 @@ public class RoomStorage {
 			room.setMessageStatus(messageId, status);
 	}
 }
-
-
-/*
- * File folder = new File("your/path");
-File[] listOfFiles = folder.listFiles();
-
-for (int i = 0; i < listOfFiles.length; i++) {
-  if (listOfFiles[i].isFile()) {
-    System.out.println("File " + listOfFiles[i].getName());
-  } else if (listOfFiles[i].isDirectory()) {
-    System.out.println("Directory " + listOfFiles[i].getName());
-  }
-}
- */

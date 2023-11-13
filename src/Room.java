@@ -15,6 +15,7 @@ public class Room {
 	
 	public Room(String[] users) {
 		id = UUID.randomUUID().toString();
+		creationDate = new Date();
 		this.users = new ArrayList<String>();
 		for (String userId : users) {
 			this.users.add(userId);
@@ -29,10 +30,13 @@ public class Room {
 		try {
 			scanner = new Scanner(file);
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+			//TODO: this does not work
 			creationDate = simpleDateFormat.parse(scanner.nextLine());
 			users = new ArrayList<String>();
-			for (String userId : scanner.nextLine().split(",")) {
-				if (!userId.isEmpty())
+			String line = scanner.nextLine();
+			for (String userId : line.split(",")) {
+				System.out.println(userId);
+				if (userId != null && !userId.isEmpty())
 					users.add(userId);
 			}
 			chatHistory = new ChatHistory();
@@ -78,7 +82,7 @@ public class Room {
 	}
 	
 	public void addMessage(ChatMessage message) {
-		chatHistory.addMessage(null);
+		chatHistory.addMessage(message);
 	}
 	
 	public void setMessageStatus(String messageId, MessageStatus status) {

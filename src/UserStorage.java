@@ -48,10 +48,11 @@ public class UserStorage {
 				
 				//list of rooms user is in, may be empty
 				List<String> rooms = new ArrayList<String>();
-				for (String roomId : info[1].split(",")) {
-					rooms.add(roomId);
+				if (info[1] != null) {
+					for (String roomId : info[1].split(",")) {
+						rooms.add(roomId);
+					}
 				}
-				
 				userIdRooms.putIfAbsent(info[0], rooms);
 			}
 			scanner.close();
