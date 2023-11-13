@@ -21,11 +21,9 @@ public class Room {
 		empty = this.users.isEmpty();
 	}
 	
-	//TODO: a file constructor could be useful here
-	public Room(String filename) {
+	public Room(File file) {
 		Scanner scanner = null;
 		try {
-			File file = new File(filename);
 			scanner = new Scanner(file);
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
 			creationDate = simpleDateFormat.parse(scanner.nextLine());
