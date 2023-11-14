@@ -18,6 +18,9 @@ public class RoomStorage {
 	}
 	
 	//TODO: not sure if this is correct according to the design or if the name is a bit off
+	// RESPONSE
+	// argument should be list of room ids
+	// UserStorage contains map of userId -> list of room ids
 	public List<Room> getRoomsForUser(String userId) {
 		List<Room> userRooms = new ArrayList<Room>();
 		for (String roomId : rooms.keySet()) {
