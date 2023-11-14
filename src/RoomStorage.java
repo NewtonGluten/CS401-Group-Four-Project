@@ -21,19 +21,13 @@ public class RoomStorage {
 	// RESPONSE
 	// argument should be list of room ids
 	// UserStorage contains map of userId -> list of room ids
-	public List<Room> getRoomsForUser(String userId) {
+	//RESOLVED
+	public List<Room> getRoomsForUser(List<String> roomIds) {
 		List<Room> userRooms = new ArrayList<Room>();
-		for (String roomId : rooms.keySet()) {
+		for (String roomId : roomIds) {
 			Room room = rooms.get(roomId);
-			if (room == null)
-				continue;
-			List<String> users = room.getUsers();
-			for (String id : users) {
-				if (userId.equals(id)) {
-					userRooms.add(room);
-					break;
-				}
-			}
+			if (room != null)
+				userRooms.add(room);
 		}
 		return userRooms;
 	}

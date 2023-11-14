@@ -13,7 +13,8 @@ public class Driver {
     	System.out.println(roomId);
     }
     RoomStorage roomStorage = new RoomStorage();
-    List<Room> someRooms = roomStorage.getRoomsForUser("randomuser");
+    List<String> roomIdsForUser = userStorage.getUserRooms("randomuser");
+    List<Room> someRooms = roomStorage.getRoomsForUser(roomIdsForUser);
     for (Room room : someRooms) {
     	System.out.println(room.getId());
     }
