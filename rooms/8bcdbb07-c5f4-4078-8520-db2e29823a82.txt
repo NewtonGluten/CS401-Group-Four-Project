@@ -1,4 +1,0 @@
-Mon Nov 13 11:56:47 PST 2023
-randomuser,someone,normaluser,
-[fcd709a3-5b23-441d-888a-012556024750][randomuser@Mon Nov 13 11:56:47 PST 2023]:hello
-[ef82d10c-2754-4fd3-897f-55ec4e0ed390][someone@Mon Nov 13 11:56:47 PST 2023]:goodbye

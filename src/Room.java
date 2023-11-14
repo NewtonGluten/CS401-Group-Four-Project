@@ -29,7 +29,7 @@ public class Room {
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(file);
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
 			//TODO: this does not work
 			creationDate = simpleDateFormat.parse(scanner.nextLine());
 			users = new ArrayList<String>();
@@ -90,7 +90,8 @@ public class Room {
 	}
 	
 	public String toString() {
-		String file = creationDate.toString() + '\n';
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
+		String file = simpleDateFormat.format(creationDate) + '\n';
 		if (empty)
 			file += '\n';
 		else {

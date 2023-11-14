@@ -35,10 +35,7 @@ public class ChatMessage implements Serializable {
 	
 	//TODO: file constructor could be useful here
 	public ChatMessage(String line) {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-		
-		
-		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
 		//starts at 2nd char and is length 36
 		try {
 			sender = line.substring(1, 36);
@@ -91,6 +88,7 @@ public class ChatMessage implements Serializable {
 	}
 	
 	public String toString() {
-		return '[' + id + "][" + sender + '@' + timestamp.toString() + "]:" + contents;
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
+		return '[' + id + "][" + sender + '@' + simpleDateFormat.format(timestamp) + "]:" + contents;
 	}
 }

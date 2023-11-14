@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 
 public class Driver {
   public static void main(String[] args) {
-    System.out.println("Hello World!");
     UserStorage userStorage = new UserStorage();
     Authenticator authenticator = new Authenticator(userStorage);
     User user = authenticator.authenticate("randomuser", "pass");
@@ -14,8 +13,15 @@ public class Driver {
     	System.out.println(roomId);
     }
     RoomStorage roomStorage = new RoomStorage();
-    System.out.println(roomStorage.getRoomsForUser("1"));
+    List<Room> someRooms = roomStorage.getRoomsForUser("randomuser");
+    for (Room room : someRooms) {
+    	System.out.println(room.getId());
+    }
     /*try {
+    	String users[] = {"randomuser", "normaluser", "someone"};
+    	Room room = new Room(users);
+    	room.addMessage(new ChatMessage("someone", "hi", MessageStatus.Delivered));
+    	room.addMessage(new ChatMessage("normaluser", "lo", MessageStatus.Delivered));
     	PrintWriter writer = new PrintWriter("rooms/" + room.getId() + ".txt");
     	writer.print(room.toString());
     	writer.close();
