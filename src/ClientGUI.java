@@ -22,6 +22,7 @@ public class ClientGUI {
       // object of scanner class
       Scanner sc = new Scanner(System.in);
       String line = null;
+      //BEN WILL FIX
 
       while (!"exit".equalsIgnoreCase(line)) {
 
