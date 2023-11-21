@@ -1,19 +1,19 @@
 import java.io.Serializable;
 import java.util.ArrayList; 
+import java.util.List;
 
 public class Message implements Serializable {
 		
 	protected MessageType type;
-	protected String[] users;
+	protected List<String> users;
 	protected String username;
 	protected String password;
 	protected String login_status;
 	protected String room_id;
 	protected String user_id;
 	protected String contents;
-	protected ArrayList<Room> rooms; 
+	protected List<Room> rooms;
 
-	//TODO: no private setType() like assignment 5?
 	public Message (MessageType type){
 		this.type = type;
 		
@@ -42,8 +42,8 @@ public class Message implements Serializable {
 		}
 	}
 	
-	//TODO: maybe we should convert this to an ArrayList. 
-	public void setUsers (String[] users) {
+	//TODO: Changed to list because getUserRooms in UserStorage is list. 
+	public void setUsers (List<String> users) {
 		if (this.users == null) {
 			this.users = users;	
 		}
@@ -73,7 +73,8 @@ public class Message implements Serializable {
 		}
 	}
 	
-	public void setRooms (ArrayList<Room> room) {
+	//TODO: Changed to list<Room> to reflect return data type in RoomStorage
+	public void setRooms (List<Room> room) {
 		if (this.rooms == null) {
 			this.rooms = room;
 		}
@@ -107,7 +108,8 @@ public class Message implements Serializable {
 		return this.contents;
 	}
 	
-	public ArrayList<Room> getRooms(){
+	//TODO: modified to list<Room> to reflect return data type in roomStorage
+	public List<Room> getRooms(){
 		return this.rooms;
 	}
 	
