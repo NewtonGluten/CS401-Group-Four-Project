@@ -7,8 +7,7 @@ public class ClientHandler implements Runnable {
   private UserStorage users;
   private Authenticator authenticator;
   private RoomStorage rooms;
-  // TODO: uncomment logger. 
-  // private Logger logger;
+  private Logger logger;
   private boolean is_logged_in;
   private String user_id;
   
@@ -16,14 +15,13 @@ public class ClientHandler implements Runnable {
   private User currUser;
     
   
-  //public ClientHandler(Socket client_Socket, Authenticator authenticator, Logger logger, UserStorage users, RoomStorage rooms) {
-  public ClientHandler(Socket client_socket, Authenticator authenticator, UserStorage users, RoomStorage rooms) {
+  public ClientHandler(Socket client_socket, Authenticator authenticator, Logger logger, UserStorage users, RoomStorage rooms) {
     this.clientSocket = client_socket;
     this.users = users;
     this.authenticator = authenticator;
     this.rooms = rooms;
-    //this.logger = logger;
-    
+    this.logger = logger;
+     
   }
 
   public void run() {
@@ -34,6 +32,9 @@ public class ClientHandler implements Runnable {
 		Message message = null;
 		is_logged_in = false;
 		currUser = null;
+		
+		//TODO: remove
+		printDebug();
     
     try {
     	
@@ -41,27 +42,106 @@ public class ClientHandler implements Runnable {
     	outObj = new ObjectOutputStream(clientSocket.getOutputStream());
     	inObj = new ObjectInputStream(clientSocket.getInputStream());
     	
+    	
     	//Authentication Loop
     	do {
     		//See if message came in
     		if (inObj.available() > 0) {
         		message = (Message) inObj.readObject();
         		
-        		//Authenticate user
-        		currUser = authenticator.authenticate(message.getUserId(), message.getPassword());
-    		}
-    		
-    		if (currUser != null) {
-    			is_logged_in = true;
+        		if (message.getType() == MessageType.Login) {
+            		//Authenticate user
+            		currUser = authenticator.authenticate(message.getUsername(), message.getPassword());
+        		}
+        		
+        		if (currUser != null) {
+        			is_logged_in = true;
+        		}
     		}
 
     	} while (!is_logged_in);
     	
+    	//Send client all of its relevant user data
+    	message = new Message(MessageType.Login);
+    	message.setContents("Login Success");
+    	message.setUserId(currUser.getId());
     	
+    	//get list of room IDs that a user is in
+    	//then get the list of rooms based on those IDs 
+    	message.setRooms(rooms.getRoomsForUser(users.getUserRooms(user_id)));
     	
+    	outObj.writeObject(message);
     	
-    	
-    	
+    	 
+    	//Main loop
+    	do {
+    		
+    		//Check if new message came in and perform action accordingly
+    		if (inObj.available() > 0) {
+    			message = (Message) inObj.readObject();
+    			MessageType type = message.getType();
+    			
+    			switch (type) {
+    				case Logout:
+    					//TODO: remove debug message
+    					System.out.println("Logout message recieved");
+    					is_logged_in = false;
+    					message = new Message(MessageType.Logout);
+    					message.setContents("::Server:: recieved client logout request.");
+    					 
+    					outObj.writeObject(message);
+    					break;
+    					
+    				case NewChat:
+    					//TODO: remove debug message
+    					System.out.println("new chat message recieved");
+    					
+    					String contents = message.getContents();
+    					System.out.println(contents);
+    					message = new Message(MessageType.NewChat);
+    					message.setContents("\t" + contents);
+    					
+    					break;
+    					
+    				case CreateRoom:
+    					//TODO: remove debug message
+    					System.out.println("create room message recieved");
+    					
+    					break;
+    					
+    				case LeaveRoom:
+    					//TODO: remove debug message
+    					System.out.println("leave room message recieved");
+    					break;
+    					
+    				case AddToRoom:
+    					//TODO: remove debug message
+    					System.out.println("add to room message recieved"); 
+    					break;
+    					
+    				case ChangeStatus:
+    					//TODO: remove debug message
+    					System.out.println("change status message recieved"); 
+    					break;
+    					
+    				case UpdateUserStatus:
+    					//TODO: remove debug message
+    					System.out.println("update user status message recieved");
+    					break;
+    					
+    				default: break;
+    			}
+    		}
+			//Check to see if any server side data structures have been changed
+			
+			
+
+			
+			//Create message with updated data structures and send them back down the pipe
+    		
+    		
+    		
+    	} while (is_logged_in);
 
     } catch (IOException e) {
     	e.printStackTrace();
