@@ -38,7 +38,7 @@ public class ChatMessage implements Serializable {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
 		//starts at 2nd char and is length 36
 		try {
-			sender = line.substring(1, 36);
+			id = line.substring(1, 37);
 		
 			String userId = "";
 			int i = 39;
@@ -54,7 +54,7 @@ public class ChatMessage implements Serializable {
 				i++;
 			}
 			timestamp = simpleDateFormat.parse(date);
-			i++;
+			i += 2;
 			contents = line.substring(i);
 			
 		} catch(Exception e) {

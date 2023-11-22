@@ -30,12 +30,10 @@ public class Room {
 		try {
 			scanner = new Scanner(file);
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
-			//TODO: this does not work
 			creationDate = simpleDateFormat.parse(scanner.nextLine());
 			users = new ArrayList<String>();
 			String line = scanner.nextLine();
 			for (String userId : line.split(",")) {
-				System.out.println(userId);
 				if (userId != null && !userId.isEmpty())
 					users.add(userId);
 			}

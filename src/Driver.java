@@ -1,33 +1,21 @@
 import java.util.List;
 
-import java.io.PrintWriter;
-
 public class Driver {
   public static void main(String[] args) {
+	//authentication
     UserStorage userStorage = new UserStorage();
     Authenticator authenticator = new Authenticator(userStorage);
     User user = authenticator.authenticate("randomuser", "pass");
     System.out.println(user.getId() + ' ' + user.getPassword());
-    List<String> rooms = userStorage.getUserRooms("randomuser");
-    for (String roomId : rooms) {
-    	System.out.println(roomId);
-    }
+    
+    //loading and saving
     RoomStorage roomStorage = new RoomStorage();
-    List<Room> someRooms = roomStorage.getRoomsForUser("randomuser");
-    for (Room room : someRooms) {
-    	System.out.println(room.getId());
-    }
-    /*try {
-    	String users[] = {"randomuser", "normaluser", "someone"};
-    	Room room = new Room(users);
-    	room.addMessage(new ChatMessage("someone", "hi", MessageStatus.Delivered));
-    	room.addMessage(new ChatMessage("normaluser", "lo", MessageStatus.Delivered));
-    	PrintWriter writer = new PrintWriter("rooms/" + room.getId() + ".txt");
-    	writer.print(room.toString());
-    	writer.close();
-    	
-    } catch(Exception e) {
-    	e.printStackTrace();
-    }*/
+    /*String sampleUsers[] = {"randomuser", "anotheruser"};
+    Room room = new Room(sampleUsers);
+    room.addMessage(new ChatMessage("randomuser", "hi again", MessageStatus.Delivered));
+    room.addMessage(new ChatMessage("anotheruser", "lo again", MessageStatus.Delivered));*/
+    Logger logger = new Logger(roomStorage, userStorage);
+    //logger.createRoom(room);
+    logger.save();
   }
 }
