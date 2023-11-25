@@ -49,6 +49,11 @@ public class ClientHandler implements Runnable {
     	//Generate input and output stream objects.
     	outObj = new ObjectOutputStream(clientSocket.getOutputStream());
     	inObj = new ObjectInputStream(clientSocket.getInputStream());
+
+			ClientHandlerReader reader = new ClientHandlerReader(inObj, updateManager);
+			ClientHandlerWriter writer = new ClientHandlerWriter(outObj, updateManager, user_id);
+			Thread readerThread = new Thread(reader);
+			Thread writerThread = new Thread(writer);
     	
     	
     	//Authentication Loop
@@ -62,87 +67,41 @@ public class ClientHandler implements Runnable {
 				
 				if (currUser != null) {
 					user_id = currUser.getId();
+
+					// Pass the successful login message to the update manager
+					// Doing this update the user's status as Online for everyone else
+					updateManager.handleMessage(message);
+
+					//Send client the User object, list of Rooms they're in
+					// TODO: send the entire user list too
+					message = new Message(MessageType.Login);
+					
+					//get list of room IDs that a user is in
+					//then get the list of rooms based on those IDs 
+					message.setRooms(rooms.getRoomsForUser(users.getUserRooms(user_id)));
+					message.setUser(currUser);
+					
+					outObj.writeObject(message);
+
 					is_logged_in = true;
 				}
     	} while (!is_logged_in);
     	
-    	//Send client all of its relevant user data
-    	message = new Message(MessageType.Login);
-    	message.setContents("Login Success");
-    	message.setUserId(user_id);
-    	
-    	//get list of room IDs that a user is in
-    	//then get the list of rooms based on those IDs 
-    	message.setRooms(rooms.getRoomsForUser(users.getUserRooms(user_id)));
-    	
-    	outObj.writeObject(message);
-    	
-    	 
-    	//Main loop
-    	do {
-				message = (Message) inObj.readObject();
-				MessageType type = message.getType();
-				
-				switch (type) {
-					case Logout:
-						//TODO: remove debug message
-						System.out.println("Logout message recieved");
-						is_logged_in = false;
-						message = new Message(MessageType.Logout);
-						message.setContents("::Server:: recieved client logout request.");
-							
-						outObj.writeObject(message);
-						break;
-						
-					case NewChat:
-						//TODO: remove debug message
-						System.out.println("new chat message recieved");
-						
-						String contents = message.getContents();
-						System.out.println(contents);
-						message = new Message(MessageType.NewChat);
-						message.setContents("\t" + contents);
-						
-						break;
-						
-					case CreateRoom:
-						//TODO: remove debug message
-						System.out.println("create room message recieved");
-						
-						break;
-						
-					case LeaveRoom:
-						//TODO: remove debug message
-						System.out.println("leave room message recieved");
-						break;
-						
-					case AddToRoom:
-						//TODO: remove debug message
-						System.out.println("add to room message recieved"); 
-						break;
-						
-					case ChangeStatus:
-						//TODO: remove debug message
-						System.out.println("change status message recieved"); 
-						break;
-						
-					case UpdateUserStatus:
-						//TODO: remove debug message
-						System.out.println("update user status message recieved");
-						break;
-						
-					default: break;
-				}
-			//Check to see if any server side data structures have been changed
-			
-			
+			//Start reader and writer threads
+			readerThread.start();
+			writerThread.start();
 
-			
-			//Create message with updated data structures and send them back down the pipe
-    		
-    		
-    		
-    	} while (is_logged_in);
+    	//Main loop
+    	while (true) {
+				// Busy wait until the reader thread is done, which means the client
+				// has logged out
+				if (!readerThread.isAlive()) {
+					// Stop the writer thread
+					writerThread.interrupt();
+
+					break;
+				}
+			}
 
     } catch (IOException e) {
     	e.printStackTrace();
