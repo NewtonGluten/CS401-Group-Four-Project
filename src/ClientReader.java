@@ -1,21 +1,31 @@
+import java.io.EOFException;
 import java.io.ObjectInputStream;
+import java.net.SocketException;
+import java.util.ArrayList;
 
 public class ClientReader implements Runnable {
   private ObjectInputStream objIn;
-  // TODO: needs access to a shared structure that will hold Messages
-  // received from the server
+  private ArrayList<Message> messagesReceived;
 
-  public ClientReader(ObjectInputStream objIn) {
+  public ClientReader(ObjectInputStream objIn, ArrayList<Message> messagesReceived) {
     this.objIn = objIn;
+    this.messagesReceived = messagesReceived;
   }
 
   public void run() {
     try {
       while (true) {
-        // Blocking read
-        Message msg = (Message) objIn.readObject();
+        try {
+          // This can throw and EOFException if the client closes the connection
+          // This is expected behaviour, so we catch it and break out of the loop
+          Message msg = (Message) objIn.readObject();
 
-        // TODO: add the message to the shared structure
+          messagesReceived.add(msg);
+        } catch (EOFException e) {
+          break;
+        } catch (SocketException e) {
+          break;
+        }
       }
     } catch (Exception e) {
       e.printStackTrace();
