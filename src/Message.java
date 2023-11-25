@@ -11,6 +11,7 @@ public class Message implements Serializable {
 	protected String login_status;
 	protected String room_id;
 	protected String user_id;
+	protected UserStatus user_status;
 	protected String contents;
 	protected List<Room> rooms;
 
@@ -24,7 +25,8 @@ public class Message implements Serializable {
 		this.password = null;
 		this.login_status = null;
 		this.room_id = null;
-		this.room_id = null;
+		this.user_id = null;
+		this.user_status = null;
 		this.contents = null;
 		this.rooms = null;
 	}
@@ -66,6 +68,12 @@ public class Message implements Serializable {
 			this.user_id = new String (user_id);
 		}
 	}
+
+	public void setUserStatus (UserStatus status) {
+		if (this.user_status == null) {
+			this.user_status = status;
+		}
+	}
 	
 	public void setContents (String contents) {
 		if (this.contents == null) {
@@ -102,6 +110,10 @@ public class Message implements Serializable {
 	
 	public String getUserId() {
 		return this.user_id;
+	}
+
+	public UserStatus getUserStatus() {
+		return this.user_status;
 	}
 	
 	public String getContents() {
