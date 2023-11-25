@@ -130,15 +130,9 @@ public class UpdateManager {
 
     // Add the update to the list of updates for each user, except the sender
     for (String userId : usersToSendTo) {
-      if (userId == sender) {
-        continue;
+      if (userId != sender) {
+        updatesByUserId.get(userId).add(update);
       }
-
-      if (!updatesByUserId.containsKey(userId)) {
-        updatesByUserId.put(userId, new ArrayList<Message>());
-      }
-      
-      updatesByUserId.get(userId).add(update);
     }
   }
 
@@ -162,10 +156,6 @@ public class UpdateManager {
   }
 
   public ArrayList<Message> getUpdates(String userId) {
-    if (!updatesByUserId.containsKey(userId)) {
-      updatesByUserId.put(userId, new ArrayList<Message>());
-    }
-
     return updatesByUserId.get(userId);
   }
 }
