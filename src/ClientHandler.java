@@ -50,12 +50,6 @@ public class ClientHandler implements Runnable {
     	outObj = new ObjectOutputStream(clientSocket.getOutputStream());
     	inObj = new ObjectInputStream(clientSocket.getInputStream());
 
-			ClientHandlerReader reader = new ClientHandlerReader(inObj, updateManager);
-			ClientHandlerWriter writer = new ClientHandlerWriter(outObj, updateManager, user_id);
-			Thread readerThread = new Thread(reader);
-			Thread writerThread = new Thread(writer);
-    	
-    	
     	//Authentication Loop
     	do {
 				message = (Message) inObj.readObject();
@@ -89,6 +83,13 @@ public class ClientHandler implements Runnable {
 				
 				outObj.writeObject(message);
     	} while (!is_logged_in);
+
+			// This is done down here because it's unnecessary to create the
+			// reader and writer threads if the user failed to login
+			ClientHandlerReader reader = new ClientHandlerReader(inObj, updateManager);
+			ClientHandlerWriter writer = new ClientHandlerWriter(outObj, updateManager, user_id);
+			Thread readerThread = new Thread(reader);
+			Thread writerThread = new Thread(writer);
     	
 			//Start reader and writer threads
 			readerThread.start();
