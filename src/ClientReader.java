@@ -20,6 +20,11 @@ public class ClientReader implements Runnable {
           // This is expected behaviour, so we catch it and break out of the loop
           Message msg = (Message) objIn.readObject();
 
+          // TODO: prints new chats but needs to be removed later
+          if (msg.getType() == MessageType.NewChat) {
+            System.out.println(msg.getContents());
+          }
+
           messagesReceived.add(msg);
         } catch (EOFException e) {
           break;
