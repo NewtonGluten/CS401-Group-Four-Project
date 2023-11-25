@@ -6,7 +6,6 @@ public class Message implements Serializable {
 		
 	protected MessageType type;
 	protected List<String> users;
-	protected String username;
 	protected String password;
 	protected String login_status;
 	protected String room_id;
@@ -21,7 +20,6 @@ public class Message implements Serializable {
 		//Setting everything else to null so that unused 
 		//message attributes don't contribute much to message size
 		this.users = null;
-		this.username = null;
 		this.password = null;
 		this.login_status = null;
 		this.room_id = null;
@@ -32,12 +30,6 @@ public class Message implements Serializable {
 	}
 	
 	//making these immutable by not letting them get changed after they're assigned
-	public void setUsername (String username){
-		if (this.username == null) {
-			this.username = new String(username);
-		}
-	}
-	
 	public void setPassword (String password){
 		if (this.password == null) {
 			this.password = new String(password);
@@ -90,10 +82,6 @@ public class Message implements Serializable {
 	
 	public MessageType getType() {
 		return this.type;
-	}
-	
-	public String getUsername() {
-		return this.username;
 	}
 	
 	public String getPassword() {

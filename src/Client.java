@@ -31,7 +31,7 @@ class Client {
 		
 		//try to login
 		message = new Message(MessageType.Login);
-		message.setUsername("someone");
+		message.setUserId("someone");
 		message.setPassword("password");
         outObj.writeObject(message);
         

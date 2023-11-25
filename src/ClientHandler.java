@@ -49,7 +49,7 @@ public class ClientHandler implements Runnable {
 				
 				if (message.getType() == MessageType.Login) {
 						//Authenticate user
-						currUser = authenticator.authenticate(message.getUsername(), message.getPassword());
+						currUser = authenticator.authenticate(message.getUserId(), message.getPassword());
 				}
 				
 				if (currUser != null) {
