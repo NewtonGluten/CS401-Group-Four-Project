@@ -8,6 +8,7 @@ public class ClientHandler implements Runnable {
   private Authenticator authenticator;
   private RoomStorage rooms;
   private Logger logger;
+	private UpdateManager updateManager;
   private boolean is_logged_in;
   private String user_id;
   
@@ -15,13 +16,20 @@ public class ClientHandler implements Runnable {
   private User currUser;
     
   
-  public ClientHandler(Socket client_socket, Authenticator authenticator, Logger logger, UserStorage users, RoomStorage rooms) {
+  public ClientHandler(
+		Socket client_socket,
+		Authenticator authenticator,
+		Logger logger,
+		UserStorage users,
+		RoomStorage rooms,
+		UpdateManager updateManager
+	) {
     this.clientSocket = client_socket;
     this.users = users;
     this.authenticator = authenticator;
     this.rooms = rooms;
     this.logger = logger;
-     
+    this.updateManager = updateManager;
   }
 
   public void run() {

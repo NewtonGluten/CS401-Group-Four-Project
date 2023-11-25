@@ -11,6 +11,7 @@ class Server {
     Authenticator authenticator = new Authenticator(users);
     RoomStorage rooms = new RoomStorage();
     Logger logger = new Logger(rooms, users);
+    UpdateManager updateManager = new UpdateManager(rooms, users);
     
     //TODO: remove debug print
     System.out.println("users: " + users.hashCode() + "\n" +
@@ -40,7 +41,14 @@ class Server {
         
         
         // create a new thread object
-        ClientHandler clientSock = new ClientHandler(client, authenticator, logger, users, rooms);
+        ClientHandler clientSock = new ClientHandler(
+          client,
+          authenticator,
+          logger,
+          users,
+          rooms,
+          updateManager
+        );
 
         // This thread will handle the client
         // separately
