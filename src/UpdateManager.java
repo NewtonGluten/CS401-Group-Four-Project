@@ -134,6 +134,10 @@ public class UpdateManager {
         continue;
       }
 
+      if (!updatesByUserId.containsKey(userId)) {
+        updatesByUserId.put(userId, new ArrayList<Message>());
+      }
+      
       updatesByUserId.get(userId).add(update);
     }
   }
@@ -158,6 +162,10 @@ public class UpdateManager {
   }
 
   public ArrayList<Message> getUpdates(String userId) {
+    if (!updatesByUserId.containsKey(userId)) {
+      updatesByUserId.put(userId, new ArrayList<Message>());
+    }
+
     return updatesByUserId.get(userId);
   }
 }
