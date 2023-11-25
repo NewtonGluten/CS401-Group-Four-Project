@@ -1,12 +1,8 @@
-import java.util.List;
-import java.util.Scanner;
-import java.util.UUID;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 import java.text.SimpleDateFormat;
 
-public class Room {
+public class Room implements Serializable {
 	private String id;
 	private Date creationDate;
 	private List<String> users;
