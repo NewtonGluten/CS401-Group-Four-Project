@@ -45,26 +45,23 @@ public class ClientHandler implements Runnable {
     	
     	//Authentication Loop
     	do {
-    		//See if message came in
-    		if (inObj.available() > 0) {
-        		message = (Message) inObj.readObject();
-        		
-        		if (message.getType() == MessageType.Login) {
-            		//Authenticate user
-            		currUser = authenticator.authenticate(message.getUsername(), message.getPassword());
-        		}
-        		
-        		if (currUser != null) {
-        			is_logged_in = true;
-        		}
-    		}
-
+				message = (Message) inObj.readObject();
+				
+				if (message.getType() == MessageType.Login) {
+						//Authenticate user
+						currUser = authenticator.authenticate(message.getUsername(), message.getPassword());
+				}
+				
+				if (currUser != null) {
+					user_id = currUser.getId();
+					is_logged_in = true;
+				}
     	} while (!is_logged_in);
     	
     	//Send client all of its relevant user data
     	message = new Message(MessageType.Login);
     	message.setContents("Login Success");
-    	message.setUserId(currUser.getId());
+    	message.setUserId(user_id);
     	
     	//get list of room IDs that a user is in
     	//then get the list of rooms based on those IDs 
@@ -75,63 +72,59 @@ public class ClientHandler implements Runnable {
     	 
     	//Main loop
     	do {
-    		
-    		//Check if new message came in and perform action accordingly
-    		if (inObj.available() > 0) {
-    			message = (Message) inObj.readObject();
-    			MessageType type = message.getType();
-    			
-    			switch (type) {
-    				case Logout:
-    					//TODO: remove debug message
-    					System.out.println("Logout message recieved");
-    					is_logged_in = false;
-    					message = new Message(MessageType.Logout);
-    					message.setContents("::Server:: recieved client logout request.");
-    					 
-    					outObj.writeObject(message);
-    					break;
-    					
-    				case NewChat:
-    					//TODO: remove debug message
-    					System.out.println("new chat message recieved");
-    					
-    					String contents = message.getContents();
-    					System.out.println(contents);
-    					message = new Message(MessageType.NewChat);
-    					message.setContents("\t" + contents);
-    					
-    					break;
-    					
-    				case CreateRoom:
-    					//TODO: remove debug message
-    					System.out.println("create room message recieved");
-    					
-    					break;
-    					
-    				case LeaveRoom:
-    					//TODO: remove debug message
-    					System.out.println("leave room message recieved");
-    					break;
-    					
-    				case AddToRoom:
-    					//TODO: remove debug message
-    					System.out.println("add to room message recieved"); 
-    					break;
-    					
-    				case ChangeStatus:
-    					//TODO: remove debug message
-    					System.out.println("change status message recieved"); 
-    					break;
-    					
-    				case UpdateUserStatus:
-    					//TODO: remove debug message
-    					System.out.println("update user status message recieved");
-    					break;
-    					
-    				default: break;
-    			}
-    		}
+				message = (Message) inObj.readObject();
+				MessageType type = message.getType();
+				
+				switch (type) {
+					case Logout:
+						//TODO: remove debug message
+						System.out.println("Logout message recieved");
+						is_logged_in = false;
+						message = new Message(MessageType.Logout);
+						message.setContents("::Server:: recieved client logout request.");
+							
+						outObj.writeObject(message);
+						break;
+						
+					case NewChat:
+						//TODO: remove debug message
+						System.out.println("new chat message recieved");
+						
+						String contents = message.getContents();
+						System.out.println(contents);
+						message = new Message(MessageType.NewChat);
+						message.setContents("\t" + contents);
+						
+						break;
+						
+					case CreateRoom:
+						//TODO: remove debug message
+						System.out.println("create room message recieved");
+						
+						break;
+						
+					case LeaveRoom:
+						//TODO: remove debug message
+						System.out.println("leave room message recieved");
+						break;
+						
+					case AddToRoom:
+						//TODO: remove debug message
+						System.out.println("add to room message recieved"); 
+						break;
+						
+					case ChangeStatus:
+						//TODO: remove debug message
+						System.out.println("change status message recieved"); 
+						break;
+						
+					case UpdateUserStatus:
+						//TODO: remove debug message
+						System.out.println("update user status message recieved");
+						break;
+						
+					default: break;
+				}
 			//Check to see if any server side data structures have been changed
 			
 			
