@@ -39,11 +39,9 @@ class Client {
         do {
         	
         	// Wait for server reply confirmation
-        	if (inObj.available() > 0) {
     			message = (Message) inObj.readObject();
     			userID = new String(message.getUserId());
     			System.out.println("Login Success");
-        	}
         	
         	
         	//It might be better for message objects to contain user
@@ -62,7 +60,6 @@ class Client {
             	//Send to server as message
         		message = new Message(MessageType.NewChat);
         		
-                line = sc.nextLine();
                 message.setContents(line);
             	outObj.writeObject(message);
             	
