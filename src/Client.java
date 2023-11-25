@@ -1,5 +1,3 @@
-import java.io.BufferedReader;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -29,23 +27,41 @@ class Client {
 		outObj= new ObjectOutputStream(socket.getOutputStream());
 		inObj = new ObjectInputStream(socket.getInputStream());
 		
-		//try to login
+				//try to login
+        do {
+		message = new Message(MessageType.Login);
 		message = new Message(MessageType.Login);
 		message.setUserId("someone");
 		message.setPassword("password");
         outObj.writeObject(message);
-        
-        
-        do {
+					message = new Message(MessageType.Login);
+		message.setUserId("someone");
+		message.setPassword("password");
+        outObj.writeObject(message);
+
+					System.out.print("Username: ");
+					message.setUserId(sc.nextLine());
+
+					System.out.print("Password: ");
+					message.setPassword(sc.nextLine());
+
+					outObj.writeObject(message);
         	
         	// Wait for server reply confirmation
     			message = (Message) inObj.readObject();
-    			userID = new String(message.getUserId());
-    			System.out.println("Login Success");
+
+					if (message.type == MessageType.Login) {
+						// If the message contains the User object then login was successful
+						currUser = message.getUser();
+
+						if (currUser == null) {
+							System.out.println("Login Failed");
+						} else {
+							userID = currUser.getId();
+							System.out.println("Login Success");
+						}
+					}
         	
-        	
-        	//It might be better for message objects to contain user
-        	//rather than just a string for userID
         } while (userID == null);
         
 
@@ -59,6 +75,8 @@ class Client {
         		
             	//Send to server as message
         		message = new Message(MessageType.NewChat);
+						message.setUserId(userID);
+						message.setRoomId("d63dbe8e-d1f3-4e82-b4de-bf2ce3c32042");
         		
                 message.setContents(line);
             	outObj.writeObject(message);
@@ -96,6 +114,7 @@ class Client {
 				if (inObj != null) {
 					inObj.close();
 					socket.close();
+					sc.close();
 				}
 			}
 			catch (IOException e) {
