@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 // Client class
@@ -16,7 +17,6 @@ class Client {
 		String userID = null;
 	
 		Scanner sc = new Scanner(System.in);
-		String line = null;
 	
 		try {
 			// Connect to the ServerSocket at host:port
@@ -28,6 +28,8 @@ class Client {
 	
 			//try to login
 			do {
+				message = new Message(MessageType.Login);
+
 				System.out.print("Username: ");
 				message.setUserId(sc.nextLine());
 
@@ -50,38 +52,35 @@ class Client {
 						System.out.println("Login Success");
 					}
 				}
-				
 			} while (userID == null);
-			
-			do {
-				//Prompt user
-				System.out.println("\nEnter a line of text");
-				line = sc.nextLine();
-				
-				if (!line.equalsIgnoreCase("logout")) {
-					
-					//Send to server as message
-					message = new Message(MessageType.NewChat);
-					message.setUserId(userID);
-					message.setRoomId("d63dbe8e-d1f3-4e82-b4de-bf2ce3c32042");
-					message.setContents(line);
-					outObj.writeObject(message);
-						
-					//wait to read server response
-					message = (Message) inObj.readObject();
-					
-					System.out.println(message.getContents());    	
-				} else {
-					//Perform Logout Sequence
-					message = new Message(MessageType.Logout);
-					outObj.writeObject(message);
-					
-					//Wait for server response and print message to terminal
-					message = (Message) inObj.readObject();
-					System.out.println(message.getContents());
-					userID = null;
+
+			// TODO: temporary shared structures
+			ArrayList<Message> messagesToSend = new ArrayList<Message>();
+			ArrayList<Message> messagesReceived = new ArrayList<Message>();
+
+			ClientReader reader = new ClientReader(inObj, messagesReceived);
+			ClientWriter writer = new ClientWriter(outObj, messagesToSend, userID);
+
+			Thread readerThread = new Thread(reader);
+			Thread writerThread = new Thread(writer);
+
+			// Start the reader and writer threads
+			readerThread.start();
+			writerThread.start();
+
+			// Busy wait while the threads are running
+			while (true) {
+				// Writer thread will die when a logout message was sent
+				if (!writerThread.isAlive()) {
+					// Stop the reader thread
+					readerThread.interrupt();
+
+					// TODO: remove
+					System.out.println("Logged out successfully");
+
+					break;
 				}
-			} while (userID != null);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
