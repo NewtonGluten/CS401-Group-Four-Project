@@ -83,6 +83,10 @@ public class Message implements Serializable {
 	public MessageType getType() {
 		return this.type;
 	}
+
+	public List<String> getUsers() {
+		return this.users;
+	}
 	
 	public String getPassword() {
 		return this.password;
