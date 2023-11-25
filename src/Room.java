@@ -13,7 +13,7 @@ public class Room {
 	private ChatHistory chatHistory;
 	private boolean empty;
 	
-	public Room(String[] users) {
+	public Room(List<String> users) {
 		id = UUID.randomUUID().toString();
 		creationDate = new Date();
 		this.users = new ArrayList<String>();
