@@ -1,5 +1,4 @@
 import java.io.Serializable;
-import java.util.ArrayList; 
 import java.util.List;
 
 public class Message implements Serializable {
@@ -10,6 +9,7 @@ public class Message implements Serializable {
 	protected String login_status;
 	protected String room_id;
 	protected String user_id;
+	protected User user;
 	protected UserStatus user_status;
 	protected String contents;
 	protected List<Room> rooms;
@@ -24,6 +24,7 @@ public class Message implements Serializable {
 		this.login_status = null;
 		this.room_id = null;
 		this.user_id = null;
+		this.user = null;
 		this.user_status = null;
 		this.contents = null;
 		this.rooms = null;
@@ -36,7 +37,6 @@ public class Message implements Serializable {
 		}
 	}
 	
-	//TODO: Changed to list because getUserRooms in UserStorage is list. 
 	public void setUsers (List<String> users) {
 		if (this.users == null) {
 			this.users = users;	
@@ -61,6 +61,12 @@ public class Message implements Serializable {
 		}
 	}
 
+	public void setUser (User user) {
+		if (this.user == null) {
+			this.user = user;
+		}
+	}
+
 	public void setUserStatus (UserStatus status) {
 		if (this.user_status == null) {
 			this.user_status = status;
@@ -73,7 +79,6 @@ public class Message implements Serializable {
 		}
 	}
 	
-	//TODO: Changed to list<Room> to reflect return data type in RoomStorage
 	public void setRooms (List<Room> room) {
 		if (this.rooms == null) {
 			this.rooms = room;
@@ -104,6 +109,10 @@ public class Message implements Serializable {
 		return this.user_id;
 	}
 
+	public User getUser() {
+		return this.user;
+	}
+
 	public UserStatus getUserStatus() {
 		return this.user_status;
 	}
@@ -112,7 +121,6 @@ public class Message implements Serializable {
 		return this.contents;
 	}
 	
-	//TODO: modified to list<Room> to reflect return data type in roomStorage
 	public List<Room> getRooms(){
 		return this.rooms;
 	}
