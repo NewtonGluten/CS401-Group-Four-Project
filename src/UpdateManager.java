@@ -29,7 +29,7 @@ public class UpdateManager {
     String sender = message.getUserId();
     Message update = null;
 
-    switch (message.type) {
+    switch (message.getType()) {
       case Login:
       case Logout:
       case ChangeStatus:
