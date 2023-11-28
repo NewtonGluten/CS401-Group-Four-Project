@@ -22,19 +22,15 @@ public class ClientHandlerWriter implements Runnable {
         // Get and send any updates for the user
         ArrayList<Message> updatesToSend = updateManager.getUpdates(userId);
 
-        if (updatesToSend.size() > 0) {
-          for (Message msg : updatesToSend) {
-            objOut.writeObject(msg);
-          }
-
-          // Clear the list of updates
-          // There is a possibility that an update is added to the list as
-          // we are clearing it, but the throughput of the application
-          // likely isn't high enough for this to be a concern
-          updatesToSend.clear();
+        while (updatesToSend.size() > 0) {
+          objOut.writeObject(updatesToSend.remove(0));
         }
+
+        Thread.sleep(50);
       }
     } catch (IOException e) {
+      e.printStackTrace();
+    } catch (InterruptedException e) {
       e.printStackTrace();
     }
   }

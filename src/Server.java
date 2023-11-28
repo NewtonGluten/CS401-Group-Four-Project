@@ -24,7 +24,7 @@ class Server {
     try {
 
       // server is listening on port 1234
-      server = new ServerSocket(1234);
+      server = new ServerSocket(4014);
       server.setReuseAddress(true);
 
       // running infinite loop for getting

@@ -130,7 +130,10 @@ public class UpdateManager {
 
     // Add the update to the list of updates for each user, except the sender
     for (String userId : usersToSendTo) {
-      if (userId != sender) {
+      User user = userStorage.getUserById(userId);
+      UserStatus userStatus = user.getStatus();
+
+      if (userId != sender && userStatus != UserStatus.Offline) {
         updatesByUserId.get(userId).add(update);
       }
     }

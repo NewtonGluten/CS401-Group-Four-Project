@@ -1,64 +1,33 @@
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class ClientWriter implements Runnable {
   private ObjectOutputStream objOut;
-  private ArrayList<Message> messagesToSend;
-  // TODO: userId shouldn't be needed
-  private String userId;
+  private ArrayList<Message> outMsgs;
 
   public ClientWriter(
     ObjectOutputStream objOut,
-    ArrayList<Message> messagesToSend,
-    String userId
+    ArrayList<Message> outMsgs
   ) {
     this.objOut = objOut;
-    this.messagesToSend = messagesToSend;
-    this.userId = userId;
+    this.outMsgs = outMsgs;
   }
 
   public void run() {
     try {
-      Scanner sc = new Scanner(System.in);
-      String line;
-      Message message = null;
-
       while (true) {
-        // TODO: this whole block should be removed eventually
-        //Prompt user
-        System.out.println("\nEnter a line of text");
-        line = sc.nextLine();
-        
-        if (line.equalsIgnoreCase("logout")) {
-          message = new Message(MessageType.Logout);
-          message.setUserId(userId);
-          message.setUserStatus(UserStatus.Offline);
-        } else {
-          //Send to server as message
-          message = new Message(MessageType.NewChat);
-          message.setUserId(userId);
-          message.setRoomId("d63dbe8e-d1f3-4e82-b4de-bf2ce3c32042");
-          message.setContents(line);
-        }
+        while (outMsgs.size() > 0) {
+          Message msg = outMsgs.remove(0);
+          
+          objOut.writeObject(msg);
 
-        messagesToSend.add(message);
-        // TODO: Block ends here
-
-        if (messagesToSend.size() > 0) {
-          for (Message msg : messagesToSend) {
-            objOut.writeObject(msg);
-  
-            // Logout message means the thread should finish running
-            if (msg.getType() == MessageType.Logout) {
-              sc.close();
-
-              return;
-            }
-  
-            msg = null;
+          // Logout message means the thread should finish running
+          if (msg.getType() == MessageType.Logout) {
+            return;
           }
         }
+
+        Thread.sleep(50);
       }
     } catch (Exception e) {
       e.printStackTrace();
