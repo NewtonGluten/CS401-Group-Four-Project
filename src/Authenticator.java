@@ -11,6 +11,7 @@ public class Authenticator {
 		User user = userStorage.getUserById(userId);
 		if (user == null || !user.getPassword().equals(password))
 			return null;
+		user.setStatus(UserStatus.Online);
 		return user;
 	}
 }
