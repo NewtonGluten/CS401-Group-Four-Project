@@ -1,10 +1,3 @@
-enum UserStatus {
-	Online, Offline, Away, Busy
-}
-
-enum UserRole {
-	Normal, IT
-}
 
 public class User {
 	private String id;

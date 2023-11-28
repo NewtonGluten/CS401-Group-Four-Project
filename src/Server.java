@@ -5,6 +5,20 @@ import java.net.*;
 class Server {
   public static void main(String[] args) {
     ServerSocket server = null;
+    
+    // Create Data structures. 
+    UserStorage users = new UserStorage();
+    Authenticator authenticator = new Authenticator(users);
+    RoomStorage rooms = new RoomStorage();
+    Logger logger = new Logger(rooms, users);
+    
+    //TODO: remove debug print
+    System.out.println("users: " + users.hashCode() + "\n" +
+    				   "authenticator: " + authenticator.hashCode() + "\n" +
+    				   "rooms: " + rooms.hashCode() + "\n" +
+    				   //"logger: " + logger.hashCode() + "\n" +
+    				   "\n" );
+    
 
     try {
 
@@ -19,9 +33,14 @@ class Server {
         // socket object to receive incoming client
         // requests
         Socket client = server.accept();
-
+        
+        
+        //TODO: remove debugging code
+        System.out.println("New client connected " + client + "\n");
+        
+        
         // create a new thread object
-        ClientHandler clientSock = new ClientHandler(client);
+        ClientHandler clientSock = new ClientHandler(client, authenticator, logger, users, rooms);
 
         // This thread will handle the client
         // separately
