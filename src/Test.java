@@ -5,7 +5,12 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 
 @SuiteClasses({
-	UserTest.class, UserStorageTest.class, AuthenticatorTest.class
+	UserTest.class, 
+	ChatMessageTest.class, 
+	ChatHistoryTest.class, 
+	RoomTest.class, 
+	UserStorageTest.class, 
+	AuthenticatorTest.class
 })
 
 public class Test {

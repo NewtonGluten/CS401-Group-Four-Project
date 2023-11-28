@@ -15,12 +15,11 @@ public class AuthenticatorTest {
 		User normalUser = authenticator.authenticate("user1", "pass");
 		assertNotNull(normalUser);
 		assertNull(authenticator.authenticate("user1", "wrong password"));
+		assertEquals(normalUser.getStatus(), UserStatus.Online);
 		
 		User ITUser = authenticator.authenticate("long name it user with spaces", "password");
 		assertNotNull(ITUser);
 		assertNull(authenticator.authenticate("long name it user with spaces", "wrong password"));
-		
-		
-		
+		assertEquals(normalUser.getStatus(), UserStatus.Online);
 	}
 }
