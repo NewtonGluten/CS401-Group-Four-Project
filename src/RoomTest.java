@@ -76,5 +76,55 @@ public class RoomTest {
 		//the room should no be empty (2 users)
 		assertFalse(room.isEmpty());
 	}
+	
+	@Test
+	public void testRemoveUser() {
+		File file = null;
+		String filename = "d63dbe8e-d1f3-4e82-b4de-bf2ce3c32042";
+		try { 
+			file = new File(filename + ".txt");
+		} catch(Exception e) {
+			fail("Failed to open file");
+		}
+		Room room = new Room(file);
+		
+		room.removeUser("user1");
+		
+		List<String> users = room.getUsers();
+		assertEquals(users.size(), 1);
+		assertEquals(users.get(0), "user2");
+		
+		room.removeUser("user2");
+		
+		users = room.getUsers();
+		assertTrue(users.isEmpty());
+		assertTrue(room.isEmpty());
+	}
+	
+	@Test
+	public void testAddUser() {
+		File file = null;
+		String filename = "d63dbe8e-d1f3-4e82-b4de-bf2ce3c32042";
+		try { 
+			file = new File(filename + ".txt");
+		} catch(Exception e) {
+			fail("Failed to open file");
+		}
+		Room room = new Room(file);
+		
+		room.addUser("long name it user with spaces");
+		
+		String users[] = {"user1", "user2", "long name it user with spaces"};
+		List<String> roomUsers = room.getUsers();
+		assertEquals(roomUsers.size(), 3);
+		for (int i = 0; i < 3; i++) {
+			assertEquals(roomUsers.get(i), users[i]);
+		}
+	}
+	
+	@Test
+	public void testAddMessage() {
+		
+	}
 
 }

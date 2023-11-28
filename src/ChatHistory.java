@@ -8,11 +8,6 @@ public class ChatHistory {
 		messages = new ArrayList<ChatMessage>();
 	}
 	
-	//TODO: what does this do
-	public String getLog(String userId) {
-		return null;
-	}
-	
 	public List<ChatMessage> getMessages() {
 		return messages;
 	}

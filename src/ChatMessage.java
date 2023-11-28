@@ -33,7 +33,6 @@ public class ChatMessage implements Serializable {
 		status = MessageStatus.Delivered;
 	}
 	
-	//TODO: file constructor could be useful here
 	public ChatMessage(String line) {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
 		//starts at 2nd char and is length 36
@@ -56,7 +55,7 @@ public class ChatMessage implements Serializable {
 			timestamp = simpleDateFormat.parse(date);
 			i += 2;
 			contents = line.substring(i);
-			
+			status = MessageStatus.Delivered;
 		} catch(Exception e) {
 			
 		}
