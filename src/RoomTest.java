@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import java.util.Date;
 import java.text.ParseException;
@@ -13,14 +14,18 @@ public class RoomTest {
 
 	@Test
 	public void testNewConstructor() {
-		String users[] = {"user1", "user2", "user3"};
+		List<String> users = new ArrayList<String>();
+		users.add("user1");
+		users.add("user2");
+		users.add("user3");
+		
 		Room room = new Room(users);
 		assertNotNull(room);
 		
 		List<String> userList = room.getUsers();
 		
 		for (int i = 0; i < 3; i++) {
-			assertEquals(users[i], userList.get(i));
+			assertEquals(users.get(i), userList.get(i));
 		}
 		//test UUID
 		assertEquals(room.getId().length(), 36);
@@ -55,7 +60,7 @@ public class RoomTest {
 		File file = null;
 		String filename = "d63dbe8e-d1f3-4e82-b4de-bf2ce3c32042";
 		try { 
-			file = new File(filename + ".txt");
+			file = new File("rooms/" + filename + ".txt");
 		} catch(Exception e) {
 			fail("Failed to open file");
 		}
@@ -66,7 +71,7 @@ public class RoomTest {
 		String users[] = {"user1", "user2"};
 		List<String> userList = room.getUsers();
 		
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 2; i++) {
 			assertEquals(users[i], userList.get(i));
 		}
 		//test UUID
@@ -82,7 +87,7 @@ public class RoomTest {
 		File file = null;
 		String filename = "d63dbe8e-d1f3-4e82-b4de-bf2ce3c32042";
 		try { 
-			file = new File(filename + ".txt");
+			file = new File("rooms/" + filename + ".txt");
 		} catch(Exception e) {
 			fail("Failed to open file");
 		}
@@ -106,7 +111,7 @@ public class RoomTest {
 		File file = null;
 		String filename = "d63dbe8e-d1f3-4e82-b4de-bf2ce3c32042";
 		try { 
-			file = new File(filename + ".txt");
+			file = new File("rooms/" + filename + ".txt");
 		} catch(Exception e) {
 			fail("Failed to open file");
 		}
