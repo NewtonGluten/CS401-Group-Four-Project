@@ -36,7 +36,7 @@ public class ClientGUI implements Runnable {
       createChatWindow(msgList);
   
       while (true) {
-        Integer msgIndex = chatMsgIndex.get(currentRoomId);
+        int msgIndex = chatMsgIndex.get(currentRoomId);
         List<ChatMessage> chats = currentRoom.getMessages();
   
         if (msgIndex < chats.size()) {
