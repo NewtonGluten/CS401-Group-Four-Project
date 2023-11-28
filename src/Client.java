@@ -10,8 +10,8 @@ class Client {
 	private static User currUser = null;
 	private static List<Room> rooms = null;
 	public static void main(String[] args) throws IOException {
-		String host = "localhost";
-		String port = "1234";
+		String host = args[0];
+		String port = "4014";
 		Socket socket = null;
 		ObjectOutputStream outObj = null;
 		ObjectInputStream inObj = null;
