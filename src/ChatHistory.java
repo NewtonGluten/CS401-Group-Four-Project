@@ -1,7 +1,8 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class ChatHistory {
+public class ChatHistory implements Serializable {
 	List<ChatMessage> messages;
 	
 	public ChatHistory() {
