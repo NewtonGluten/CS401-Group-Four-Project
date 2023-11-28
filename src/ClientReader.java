@@ -2,14 +2,21 @@ import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClientReader implements Runnable {
   private ObjectInputStream objIn;
-  private ArrayList<Message> messagesReceived;
+  private ArrayList<Message> inMsgs;
+  private List<Room> rooms;
 
-  public ClientReader(ObjectInputStream objIn, ArrayList<Message> messagesReceived) {
+  public ClientReader(
+    ObjectInputStream objIn, 
+    ArrayList<Message> inMsgs,
+    List<Room> rooms
+  ) {
     this.objIn = objIn;
-    this.messagesReceived = messagesReceived;
+    this.inMsgs = inMsgs;
+    this.rooms = rooms;
   }
 
   public void run() {
@@ -20,12 +27,22 @@ public class ClientReader implements Runnable {
           // This is expected behaviour, so we catch it and break out of the loop
           Message msg = (Message) objIn.readObject();
 
-          // TODO: prints new chats but needs to be removed later
           if (msg.getType() == MessageType.NewChat) {
-            System.out.println(msg.getContents());
+            // Update the room client side
+            Room room = getRoomById(msg.getRoomId());
+
+            room.addMessage(new ChatMessage(
+              msg.getUserId(),
+              msg.getContents(),
+              MessageStatus.Delivered
+            ));
+          } else {
+            // The message doesn't modify the room and should be handled
+            // somewhere else
+            inMsgs.add(msg);
           }
 
-          messagesReceived.add(msg);
+          Thread.sleep(50);
         } catch (EOFException e) {
           break;
         } catch (SocketException e) {
@@ -35,5 +52,15 @@ public class ClientReader implements Runnable {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private Room getRoomById(String roomId) {
+    for (Room room : rooms) {
+      if (room.getId().equals(roomId)) {
+        return room;
+      }
+    }
+
+    return null;
   }
 }
