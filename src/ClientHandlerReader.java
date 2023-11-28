@@ -23,10 +23,14 @@ public class ClientHandlerReader implements Runnable {
         if (msg.getType() == MessageType.Logout) {
           break;
         }
+
+        Thread.sleep(50);
       }
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
+      e.printStackTrace();
+    } catch (InterruptedException e) {
       e.printStackTrace();
     }
   }

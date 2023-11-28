@@ -9,7 +9,7 @@ public class Authenticator {
 		User user = userStorage.getUserById(userId);
 		if (user == null || !user.getPassword().equals(password))
 			return null;
-		userStorage.setUserStatus(userId, UserStatus.Online);
+		user.setStatus(UserStatus.Online);
 		return user;
 	}
 }
