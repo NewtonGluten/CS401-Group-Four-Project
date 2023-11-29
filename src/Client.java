@@ -93,7 +93,10 @@ class Client {
 					JOptionPane.PLAIN_MESSAGE
 				);
 	
-				if (result == JOptionPane.OK_OPTION) {
+				if (result == JOptionPane.OK_OPTION
+					&& userId.getText().length() > 0
+					&& password.getText().length() > 0
+				) {
 					Message msg = new Message(MessageType.Login);
 					
 					msg.setUserId(userId.getText());
@@ -115,7 +118,7 @@ class Client {
 							);
 						}
 					}
-				} else {
+				} else if (result == JOptionPane.CANCEL_OPTION) {
 					System.exit(0);
 				}
 			}
