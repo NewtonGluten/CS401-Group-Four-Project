@@ -109,7 +109,7 @@ class Client {
 						} else {
 							JOptionPane.showMessageDialog(
 								null,
-								"Invalid username or password",
+								response.getContents(),
 								"Login Error",
 								JOptionPane.ERROR_MESSAGE
 							);

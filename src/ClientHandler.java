@@ -56,14 +56,14 @@ public class ClientHandler implements Runnable {
 				
 				if (message.getType() == MessageType.Login) {
 						//Authenticate user
-						currUser = authenticator.authenticate(message.getUserId(), message.getPassword());
+						message = authenticator.authenticate(message.getUserId(), message.getPassword());
+
+						if (message.getUser() != null) {
+							currUser = message.getUser();
+						}
 				}
 
-				// User is null if authentication failed, so try again
-				if (currUser == null) {
-					// A login message with a null user means authentication failed
-					message = new Message(MessageType.Login);
-				} else {
+				if (currUser != null) {
 					user_id = currUser.getId();
 					is_logged_in = true;
 	
@@ -71,14 +71,12 @@ public class ClientHandler implements Runnable {
 					// Doing this update the user's status as Online for everyone else
 					updateManager.handleMessage(message);
 
-					//Send client the User object, list of Rooms they're in
 					// TODO: send the entire user list too
-					message = new Message(MessageType.Login);
-	
+					
+					//Send client the User object, list of Rooms they're in
 					//get list of room IDs that a user is in
 					//then get the list of rooms based on those IDs 
 					message.setRooms(rooms.getRoomsForUser(users.getUserRooms(user_id)));
-					message.setUser(currUser);
 				}
 				
 				outObj.writeObject(message);
