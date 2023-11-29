@@ -35,23 +35,25 @@ public class ClientGUI implements Runnable {
       msgList.setEditable(false);
       createChatWindow(msgList);
   
-      while (true) {
-        int msgIndex = chatMsgIndex.get(currentRoomId);
-        List<ChatMessage> chats = currentRoom.getMessages();
-  
-        if (msgIndex < chats.size()) {
-          for (int i = msgIndex; i < chats.size(); i++) {
-            ChatMessage chat = chats.get(i);
-            String sender = chat.getSender();
-            String contents = chat.contents();
-  
-            msgList.append(sender + ": " + contents + "\n");
+      if (currentRoom != null) {
+        while (true) {
+          int msgIndex = chatMsgIndex.get(currentRoomId);
+          List<ChatMessage> chats = currentRoom.getMessages();
+    
+          if (msgIndex < chats.size()) {
+            for (int i = msgIndex; i < chats.size(); i++) {
+              ChatMessage chat = chats.get(i);
+              String sender = chat.getSender();
+              String contents = chat.contents();
+    
+              msgList.append(sender + ": " + contents + "\n");
+            }
+    
+            chatMsgIndex.put(currentRoomId, chats.size());
           }
   
-          chatMsgIndex.put(currentRoomId, chats.size());
+          Thread.sleep(50);
         }
-
-        Thread.sleep(50);
       }
     } catch (InterruptedException e) {
       e.printStackTrace();
