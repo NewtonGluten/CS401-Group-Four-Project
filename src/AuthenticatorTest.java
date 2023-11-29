@@ -12,12 +12,14 @@ public class AuthenticatorTest {
 		
 		assertNull(authenticator.authenticate("this user doesn't exist", "pass"));
 		
-		User normalUser = authenticator.authenticate("user1", "pass");
+		Message normalUserMsg = authenticator.authenticate("user1", "pass");
+		User normalUser = normalUserMsg.getUser();
 		assertNotNull(normalUser);
 		assertNull(authenticator.authenticate("user1", "wrong password"));
 		assertEquals(normalUser.getStatus(), UserStatus.Online);
 		
-		User ITUser = authenticator.authenticate("long name it user with spaces", "password");
+		Message ITUserMsg = authenticator.authenticate("long name it user with spaces", "password");
+		User ITUser = ITUserMsg.getUser();
 		assertNotNull(ITUser);
 		assertNull(authenticator.authenticate("long name it user with spaces", "wrong password"));
 		assertEquals(normalUser.getStatus(), UserStatus.Online);
