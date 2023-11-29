@@ -3,6 +3,7 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 
 public class Room implements Serializable {
+	private static final long serialVersionUID = -3423914092361594732L;
 	private String id;
 	private Date creationDate;
 	private List<String> users;
