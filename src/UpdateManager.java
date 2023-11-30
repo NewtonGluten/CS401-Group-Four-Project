@@ -1,6 +1,8 @@
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 enum UpdateType {
   CreateRoom,
@@ -11,18 +13,24 @@ enum UpdateType {
 public class UpdateManager {
   private RoomStorage roomStorage;
   private UserStorage userStorage;
+  private Logger logger;
   // Map of user id to a list of updates for that user
   private HashMap<String, ArrayList<Message>> updatesByUserId;
 
-  public UpdateManager(RoomStorage roomStorage, UserStorage userStorage) {
+  public UpdateManager(RoomStorage roomStorage, UserStorage userStorage, Logger logger) {
     this.roomStorage = roomStorage;
     this.userStorage = userStorage;
+    this.logger = logger;
     this.updatesByUserId = new HashMap<String, ArrayList<Message>>();
 
     // Create an empty list of updates for each user
     for (String userId : userStorage.getAllUsers()) {
       updatesByUserId.put(userId, new ArrayList<Message>());
     }
+  }
+
+  private String getTime() {
+    return new SimpleDateFormat("MM-dd-yy HH:mm").format(new Date());
   }
 
   public void handleMessage(Message message) {
@@ -56,6 +64,7 @@ public class UpdateManager {
         update.setUserId(sender);
         update.setContents(message.getContents());
         update.setRoomId(message.getRoomId());
+        update.setTimestamp(getTime());
 
         addUpdate(sender, update, UpdateType.ModifyRoom);
 
@@ -86,6 +95,7 @@ public class UpdateManager {
           roomToUpdate.addUser(message.getUserId());
         } else {
           roomToUpdate.removeUser(message.getUserId());
+          userStorage.removeRoom(sender, message.getRoomId());
         }
 
         // Create a new AddToRoom or LeaveRoom message that will be sent to
@@ -95,6 +105,21 @@ public class UpdateManager {
         update.setRoomId(message.getRoomId());
 
         addUpdate(sender, update, UpdateType.ModifyRoom);
+
+        break;
+      case GetLogs:
+        String log = "";
+
+        if (message.getContents() != null) {
+          log = logger.getLogsForUser(message.getContents());
+        } else if (message.getRoomId() != null) {
+          log = logger.getLogForRoom(message.getRoomId());
+        }
+
+        update = new Message(MessageType.GetLogs);
+        update.setContents(log);
+
+        updatesByUserId.get(sender).add(update);
 
         break;
       default:
