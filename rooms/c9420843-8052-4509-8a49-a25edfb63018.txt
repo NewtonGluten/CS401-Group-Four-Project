@@ -1,2 +1,9 @@
 11-29-23 14:58:19
-aaron,ben,jagjot,kosta
+aaron,ben,jagjot,kosta,
+[a9acc0b4-7201-4dda-9762-250290d80078][randomuser@11-14-23 15:52:20]:4 people
+[9fa8a15d-29b4-4321-876e-7f8efe218fa2][anotheruser@11-14-23 15:52:20]:4 people
+[77a2a00e-b636-4723-b0cf-829270bfdfce][aaron@11-30-23 01:42:15]:we can still talk here though
+[8dcab428-c156-40af-88e9-c39f558ce862][kosta@11-30-23 01:42:18]:yeah
+[3dda70be-d19b-4756-b1f2-c28d9f04ac86][aaron@11-30-23 01:49:24]:testing the save button
+[50f10d56-29a0-4f57-9cbc-adc339293018][aaron@11-30-23 01:52:59]:testing again
+[a30b95a3-75d3-4c4e-8fcf-f417c0f117fe][aaron@11-30-23 01:59:01]:testing one more time

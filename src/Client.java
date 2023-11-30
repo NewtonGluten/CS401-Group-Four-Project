@@ -1,14 +1,16 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
+import java.awt.event.*;
 
 // Client class
 class Client {
 	private static User currUser = null;
 	private static List<Room> rooms = null;
+	private static List<User> users = null;
+	private static JFrame loginWindow;
 	public static void main(String[] args) throws IOException {
 		String host = args[0];
 		String port = "4014";
@@ -26,35 +28,34 @@ class Client {
 	
 			doLoginFlow(inObj, outObj);
 
-			ArrayList<Message> outMsgs = new ArrayList<Message>();
-			ArrayList<Message> inMsgs = new ArrayList<Message>();
+			// wait for the user to either login or close the login window
+			while (loginWindow.isVisible()) {
+				Thread.sleep(100);
+			}
 
-			ClientGUI gui = new ClientGUI(inMsgs, outMsgs, rooms, currUser.getId());
-			ClientReader reader = new ClientReader(inObj, inMsgs, rooms);
-			ClientWriter writer = new ClientWriter(outObj, outMsgs);
+			// user closed the login window
+			if (currUser == null) {
+				return;
+			}
+
+			ClientGUI gui = new ClientGUI(inObj, outObj, rooms, users, currUser);
 
 			Thread guiThread = new Thread(gui);
-			Thread readerThread = new Thread(reader);
-			Thread writerThread = new Thread(writer);
 
-			// Start the threads
+
 			guiThread.start();
-			readerThread.start();
-			writerThread.start();
 
 			// Busy wait while the threads are running
 			while (true) {
-				// Writer thread will die when a logout message was sent
-				if (!writerThread.isAlive()) {
-					// Stop the other threads
-					guiThread.interrupt();
-					readerThread.interrupt();
+				// GUI thread will die when the user closes the window
+				if (!guiThread.isAlive()) {
 
 					break;
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
 		} finally {
 			try {
 				if (outObj != null) {
@@ -65,6 +66,8 @@ class Client {
 					inObj.close();
 					socket.close();
 				}
+				
+				System.exit(0);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -72,54 +75,66 @@ class Client {
 	}
 
 	private static void doLoginFlow(ObjectInputStream inObj, ObjectOutputStream outObj) {
-		try {
-			while (currUser == null) {
+		JFrame frame = new JFrame("Login");
+		JPanel panel = new JPanel();
+		JTextField userId = new JTextField(20);
+		JTextField password = new JTextField(20);
+		JButton loginBtn = new JButton("Login");
+		
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
 
-				JPanel panel = new JPanel();
-				JTextField userId = new JTextField(20);
-				JTextField password = new JTextField(20);
-	
-				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-				panel.add(new JLabel("User ID"));
-				panel.add(userId);
-				panel.add(new JLabel("Password"));
-				panel.add(password);
-	
-				int result = JOptionPane.showConfirmDialog(
-					null,
-					panel,
-					"Login",
-					JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.PLAIN_MESSAGE
-				);
-	
-				if (result == JOptionPane.OK_OPTION
-					&& userId.getText().length() > 0
-					&& password.getText().length() > 0
-				) {
-					Message msg = new Message(MessageType.Login);
-					
-					msg.setUserId(userId.getText());
-					msg.setPassword(password.getText());
-					outObj.writeObject(msg);
-	
-					Message response = (Message) inObj.readObject();
-	
-					if (response.getType() == MessageType.Login) {
-						if (response.getUser() != null) {
-							currUser = response.getUser();
-							rooms = response.getRooms();
-						} else {
-							JOptionPane.showMessageDialog(
-								null,
-								response.getContents(),
-								"Login Error",
-								JOptionPane.ERROR_MESSAGE
-							);
-						}
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(new JLabel("User ID"));
+		panel.add(userId);
+		panel.add(new JLabel("Password"));
+		panel.add(password);
+
+		loginBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (userId.getText().length() > 0 && password.getText().length() > 0) {
+					tryLogin(inObj, outObj, userId.getText(), password.getText());
+				}
+			}
+		});
+
+		password.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if (userId.getText().length() > 0 && password.getText().length() > 0) {
+						tryLogin(inObj, outObj, userId.getText(), password.getText());
 					}
-				} else if (result == JOptionPane.CANCEL_OPTION) {
-					System.exit(0);
+				}
+			}
+		});
+
+		panel.add(loginBtn);
+
+		frame.add(panel);
+		frame.pack();
+		frame.setVisible(true);
+
+		loginWindow = frame;
+	}
+
+	private static void tryLogin(ObjectInputStream inObj, ObjectOutputStream outObj, String user, String password) {
+		try {
+			Message msg = new Message(MessageType.Login);
+	
+			msg.setUserId(user);
+			msg.setPassword(password);
+			outObj.writeObject(msg);
+
+			Message response = (Message) inObj.readObject();
+
+			if (response.getType() == MessageType.Login) {
+				if (response.getUser() != null) {
+					currUser = response.getUser();
+					rooms = response.getRooms();
+					users = response.getUserList();
+					loginWindow.setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(null, response.getContents());
 				}
 			}
 		} catch (Exception e) {

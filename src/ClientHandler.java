@@ -53,6 +53,10 @@ public class ClientHandler implements Runnable {
     	//Authentication Loop
     	do {
 				message = (Message) inObj.readObject();
+
+				if (message == null) {
+					return;
+				}
 				
 				if (message.getType() == MessageType.Login) {
 						//Authenticate user
@@ -71,12 +75,11 @@ public class ClientHandler implements Runnable {
 					// Doing this update the user's status as Online for everyone else
 					updateManager.handleMessage(message);
 
-					// TODO: send the entire user list too
-					
 					//Send client the User object, list of Rooms they're in
 					//get list of room IDs that a user is in
 					//then get the list of rooms based on those IDs 
 					message.setRooms(rooms.getRoomsForUser(users.getUserRooms(user_id)));
+					message.setUserList(users.getUserList(user_id));
 				}
 				
 				outObj.writeObject(message);
@@ -106,7 +109,6 @@ public class ClientHandler implements Runnable {
 			}
 
     } catch (IOException e) {
-    	e.printStackTrace();
     } catch (ClassNotFoundException e) {
     	e.printStackTrace();
     } finally {
