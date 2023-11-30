@@ -1,4 +1,11 @@
-
 public enum MessageType {
-	Login, Logout, NewChat, CreateRoom, LeaveRoom, AddToRoom, ChangeStatus, UpdateUserStatus
+	Login,
+	Logout,
+	NewChat,
+	NewRoom,
+	CreateRoom,
+	LeaveRoom,
+	AddToRoom,
+	ChangeStatus,
+	UpdateUserStatus,
 }

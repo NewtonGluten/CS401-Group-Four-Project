@@ -1,19 +1,16 @@
-import java.util.List;
-import java.util.Scanner;
-import java.util.UUID;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 import java.text.SimpleDateFormat;
 
-public class Room {
+public class Room implements Serializable {
+	private static final long serialVersionUID = -3423914092361594732L;
 	private String id;
 	private Date creationDate;
 	private List<String> users;
 	private ChatHistory chatHistory;
 	private boolean empty;
 	
-	public Room(String[] users) {
+	public Room(List<String> users) {
 		id = UUID.randomUUID().toString();
 		creationDate = new Date();
 		this.users = new ArrayList<String>();

@@ -1,16 +1,12 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class ChatHistory {
+public class ChatHistory implements Serializable {
 	List<ChatMessage> messages;
 	
 	public ChatHistory() {
 		messages = new ArrayList<ChatMessage>();
-	}
-	
-	//TODO: what does this do
-	public String getLog(String userId) {
-		return null;
 	}
 	
 	public List<ChatMessage> getMessages() {
