@@ -1,11 +1,3 @@
+room title goes here
 11-29-23 14:58:39
-ben,kosta,
-[a9acc0b4-7201-4dda-9762-250290d80078][randomuser@11-14-23 15:52:20]:3 people
-[9fa8a15d-29b4-4321-876e-7f8efe218fa2][anotheruser@11-14-23 15:52:20]:3 people
-[f140ca1c-67f7-4124-9960-b1ad0205b5e9][aaron@11-30-23 01:41:38]:hey
-[39724619-0956-4aad-810b-56c31e195b36][kosta@11-30-23 01:41:41]:hello
-[6b583e74-03b0-453e-99b7-0f20bddf6391][aaron@11-30-23 01:41:45]:we are chatting
-[87cb3b52-6946-457e-983e-f9bf4558e9ab][kosta@11-30-23 01:41:49]:yes
-[25d79d1c-ed6c-434f-916d-f137bb5dc30a][aaron@11-30-23 01:41:56]:im going to leave now
-[d3ee6b88-903c-4aeb-85fb-a79cddfdd679][kosta@11-30-23 01:41:57]:okay
-[f3dcb022-39b4-48f4-9c6c-d251cd6e3d3e][aaron@11-30-23 01:41:59]:left the room
+aaron,ben,kosta,

@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 public class Room implements Serializable {
 	private static final long serialVersionUID = -3423914092361594732L;
 	private String id;
+	private String title;
 	private Date creationDate;
 	private List<String> users;
 	private ChatHistory chatHistory;
@@ -21,8 +22,21 @@ public class Room implements Serializable {
 			this.users.add(userId);
 			addMessage(new ChatMessage(userId, "added to the room", MessageStatus.Delivered));
 		}
-		hasNewMessage = false;
-		usersChanged = false;
+		chatHistory = new ChatHistory();
+		empty = this.users.isEmpty();		
+		title = users.get(0) + "'s Room";
+	}
+	
+	public Room(List<String> users, String title) {
+		id = UUID.randomUUID().toString();
+		creationDate = new Date();
+		this.users = new ArrayList<String>();
+		for (String userId : users) {
+			this.users.add(userId);
+		}
+		chatHistory = new ChatHistory();
+		empty = this.users.isEmpty();		
+		this.title = title;
 	}
 	
 	public Room(File file) {
@@ -30,6 +44,7 @@ public class Room implements Serializable {
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(file);
+			title = scanner.nextLine();
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
 			creationDate = simpleDateFormat.parse(scanner.nextLine());
 			users = new ArrayList<String>();
@@ -58,6 +73,10 @@ public class Room implements Serializable {
 	
 	public String getId() {
 		return id;
+	}
+	
+	public String getTitle() {
+		return title;
 	}
 	
 	public Date getCreationDate() {
@@ -130,7 +149,7 @@ public class Room implements Serializable {
 	
 	public String toString() {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
-		String file = simpleDateFormat.format(creationDate) + '\n';
+		String file = title + "\n" + simpleDateFormat.format(creationDate) + '\n';
 		if (empty)
 			file += '\n';
 		else {
