@@ -92,11 +92,14 @@ public class Room implements Serializable {
 
 	public String[] getMessagesAsArray() {
 		List<ChatMessage> messages = chatHistory.getMessages();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
 		String[] messagesAsArray = new String[messages.size()];
 
 		for (int i = 0; i < messages.size(); i++) {
 			ChatMessage msg = messages.get(i);
-			messagesAsArray[i] = msg.getSender() + ": " + msg.contents();
+			messagesAsArray[i] = "[" + simpleDateFormat.format(msg.getTimestamp()) + "] "
+				+ msg.getSender() + ": "
+				+ msg.contents();
 		}
 
 		return messagesAsArray;
@@ -140,5 +143,9 @@ public class Room implements Serializable {
 			file += message.toString() + '\n';
 		}
 		return file;
+	}
+
+	public ChatHistory getChatHistory() {
+		return chatHistory;
 	}
 }
