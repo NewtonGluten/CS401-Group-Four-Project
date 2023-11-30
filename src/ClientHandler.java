@@ -53,6 +53,10 @@ public class ClientHandler implements Runnable {
     	//Authentication Loop
     	do {
 				message = (Message) inObj.readObject();
+
+				if (message == null) {
+					return;
+				}
 				
 				if (message.getType() == MessageType.Login) {
 						//Authenticate user
@@ -105,7 +109,6 @@ public class ClientHandler implements Runnable {
 			}
 
     } catch (IOException e) {
-    	e.printStackTrace();
     } catch (ClassNotFoundException e) {
     	e.printStackTrace();
     } finally {

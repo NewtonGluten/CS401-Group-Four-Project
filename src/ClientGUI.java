@@ -15,9 +15,9 @@ public class ClientGUI implements Runnable {
   private JList<String> roomListComponent;
   private JList<String> msgListComponent;
   private JList<String> usersInRoomComponent;
+  private JFrame mainWindow;
   private JFrame newRoomWindow;
 
-  private int selectedRoomIndex;
 
   public ClientGUI(
     ArrayList<Message> inMsgs,
@@ -32,8 +32,6 @@ public class ClientGUI implements Runnable {
     this.users = users;
     this.roomIdList = null;
     this.userId = userId;
-
-    this.selectedRoomIndex = 0;
 
     this.roomListComponent = null;
 
@@ -53,9 +51,7 @@ public class ClientGUI implements Runnable {
 
     roomListComponent.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        selectedRoomIndex = roomListComponent.getSelectedIndex();
-
-        if (selectedRoomIndex >= 0) {
+        if (roomListComponent.getSelectedIndex() >= 0) {
           Room currentRoom = getCurrentRoom(roomListComponent.getSelectedValue());
           
           if (currentRoom != null) {
@@ -72,7 +68,7 @@ public class ClientGUI implements Runnable {
     usersInRoomComponent.setFixedCellWidth(256);
 
     if (rooms.size() > 0) {
-      Room currentRoom = rooms.get(selectedRoomIndex);
+      Room currentRoom = rooms.get(roomListComponent.getSelectedIndex());
 
       usersInRoomComponent.setListData(currentRoom.getUsers().toArray(new String[0]));
     }
@@ -83,7 +79,7 @@ public class ClientGUI implements Runnable {
     msgListComponent.setFixedCellWidth(256);
 
     if (rooms.size() > 0) {
-      Room currentRoom = rooms.get(selectedRoomIndex);
+      Room currentRoom = rooms.get(roomListComponent.getSelectedIndex());
 
       msgListComponent.setListData(currentRoom.getMessagesAsArray());
     }
@@ -92,6 +88,16 @@ public class ClientGUI implements Runnable {
   public void run() {
     try {
       while (true) {
+        if (!mainWindow.isVisible()) {
+          Message msg = new Message(MessageType.Logout);
+
+          msg.setUserId(userId);
+          msg.setUserStatus(UserStatus.Offline);
+          outMsgs.add(msg);
+
+          break;
+        }
+
         Room currentRoom = getCurrentRoom(roomListComponent.getSelectedValue());
 
         if (currentRoom != null) {
@@ -162,7 +168,7 @@ public class ClientGUI implements Runnable {
     JButton createRoomBtn = new JButton("Create Room");
     JButton leaveRoomBtn = new JButton("Leave Room");
 
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.setLocationRelativeTo(null);
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -201,17 +207,7 @@ public class ClientGUI implements Runnable {
         message.setRoomId(roomListComponent.getSelectedValue());
         message.setUserId(userId);
         rooms.remove(getCurrentRoom(message.getRoomId()));
-
-        if (selectedRoomIndex == 0) {
-          if (rooms.size() > 0) {
-            selectedRoomIndex = 1;
-          } else {
-            selectedRoomIndex = 0;
-          }
-        } else {
-          selectedRoomIndex--;
-        }
-        
+        roomListComponent.setSelectedIndex(0);
         updateUI();
         outMsgs.add(message);
       }
@@ -235,6 +231,8 @@ public class ClientGUI implements Runnable {
     frame.add(panel);
     frame.pack();
     frame.setVisible(true);
+
+    mainWindow = frame;
   }
 
   private void sendChat(String text) {
