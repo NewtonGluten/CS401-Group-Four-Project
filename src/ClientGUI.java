@@ -2,114 +2,84 @@ import java.util.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import javax.swing.*;
 
 public class ClientGUI implements Runnable {
-  private ArrayList<Message> inMsgs;
-  private ArrayList<Message> outMsgs;
+  private ObjectInputStream objIn;
+  private ObjectOutputStream objOut;
   private List<Room> rooms;
   private List<User> users;
-  private String[] roomIdList;
+  private User currUser;
   private String userId;
 
-  private JList<String> roomListComponent;
-  private JList<String> msgListComponent;
-  private JList<String> usersInRoomComponent;
+  private JList<String> roomsDisplay;
   private JFrame mainWindow;
   private JFrame newRoomWindow;
+  private JTextArea logDisplay;
+  private JFrame logWindow;
 
+  private JTextArea msgDisplay;
+  private JTextArea usersDisplay;
 
   public ClientGUI(
-    ArrayList<Message> inMsgs,
-    ArrayList<Message> outMsgs,
+    ObjectInputStream objIn,
+    ObjectOutputStream objOut,
     List<Room> rooms,
     List<User> users,
-    String userId
+    User currUser
   ) {
-    this.inMsgs = inMsgs;
-    this.outMsgs = outMsgs;
+    this.objIn = objIn;
+    this.objOut = objOut;
     this.rooms = rooms;
     this.users = users;
-    this.roomIdList = null;
-    this.userId = userId;
+    this.currUser = currUser;
+    this.userId = currUser.getId();
 
-    this.roomListComponent = null;
 
-    setRoomIdList();
-    createRoomListComponent();
-    createMsgListComponent();
-    createUsersInRoomComponent();
+    createRoomsDisplay();
+    createMsgDisplay();
+    createUsersDisplay();
     createNewRoomWindow();
-    createWindow();
-  }
 
-  private void createRoomListComponent() {
-    roomListComponent = new JList<String>(roomIdList);
-    roomListComponent.setFixedCellWidth(256);
-    roomListComponent.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    roomListComponent.setSelectedIndex(0);
+    this.logDisplay = null;
 
-    roomListComponent.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        if (roomListComponent.getSelectedIndex() >= 0) {
-          Room currentRoom = getCurrentRoom(roomListComponent.getSelectedValue());
-          
-          if (currentRoom != null) {
-            msgListComponent.setListData(currentRoom.getMessagesAsArray());
-            usersInRoomComponent.setListData(currentRoom.getUsers().toArray(new String[0]));
-          }
-        }
-      }
-    });
-  }
-
-  private void createUsersInRoomComponent() {
-    usersInRoomComponent = new JList<String>();
-    usersInRoomComponent.setFixedCellWidth(256);
-
-    if (rooms.size() > 0) {
-      Room currentRoom = rooms.get(roomListComponent.getSelectedIndex());
-
-      usersInRoomComponent.setListData(currentRoom.getUsers().toArray(new String[0]));
+    if (currUser.getRole() == UserRole.IT) {
+      createLogWindow();
     }
-  }
 
-  private void createMsgListComponent() {
-    msgListComponent = new JList<String>();
-    msgListComponent.setFixedCellWidth(256);
-
-    if (rooms.size() > 0) {
-      Room currentRoom = rooms.get(roomListComponent.getSelectedIndex());
-
-      msgListComponent.setListData(currentRoom.getMessagesAsArray());
-    }
+    createMainWindow();
   }
 
   public void run() {
     try {
+      ClientReader reader = new ClientReader(
+        objIn,
+        rooms,
+        users,
+        roomsDisplay,
+        msgDisplay,
+        usersDisplay,
+        logDisplay
+      );
+      Thread readerThread = new Thread(reader);
+
+      readerThread.start();
+      roomsDisplay.setSelectedIndex(0);
+
       while (true) {
         if (!mainWindow.isVisible()) {
           Message msg = new Message(MessageType.Logout);
 
           msg.setUserId(userId);
           msg.setUserStatus(UserStatus.Offline);
-          outMsgs.add(msg);
+          sendMsg(msg);
+
+          readerThread.interrupt();
 
           break;
-        }
-
-        Room currentRoom = getCurrentRoom(roomListComponent.getSelectedValue());
-
-        if (currentRoom != null) {
-          if (currentRoom.hasNewMessage()) {
-            msgListComponent.setListData(currentRoom.getMessagesAsArray());
-          }
-
-          if (currentRoom.usersChanged()) {
-            usersInRoomComponent.setListData(currentRoom.getUsers().toArray(new String[0]));
-          }
-
-          setRoomIdList();
         }
 
         Thread.sleep(50);
@@ -119,54 +89,29 @@ public class ClientGUI implements Runnable {
     }
   }
 
-  private void updateUI() {
-    if (rooms.size() == 0) {
-      msgListComponent.setListData(new String[0]);
-      usersInRoomComponent.setListData(new String[0]);
-      setRoomIdList();
-    }
+  //
+  // Window creation methods
+  //
 
-    Room currentRoom = getCurrentRoom(roomListComponent.getSelectedValue());
-
-    if (currentRoom != null) {
-      msgListComponent.setListData(currentRoom.getMessagesAsArray());
-      usersInRoomComponent.setListData(currentRoom.getUsers().toArray(new String[0]));
-      setRoomIdList();
-    }
-  }
-
-  private Room getCurrentRoom(String roomId) {
-    for (Room room : rooms) {
-      if (room.getId().equals(roomId)) {
-        return room;
-      }
-    }
-
-    return null;
-  }
-
-  private void setRoomIdList() {
-    if (roomIdList == null || roomIdList.length != rooms.size()) {
-      roomIdList = new String[rooms.size()];
-
-      for (int i = 0; i < rooms.size(); i++) {
-        roomIdList[i] = rooms.get(i).getId();
-      }
-
-      if (roomListComponent != null) {
-        roomListComponent.setListData(roomIdList);
-      }
-    }
-  }
-
-  private void createWindow() {
-    JFrame frame = new JFrame("Chat Application");
+  // Creates the main window (frame) that holds:
+  // - The list of rooms
+  // - The list of users in the current room
+  // - The text area for displaying messages
+  // - The text field for entering messages
+  // - The send button
+  // - The leave room button
+  // - The create room button
+  // - The status box
+  // - The view logs button (only visible to IT users)
+  private void createMainWindow() {
+    JFrame frame = new JFrame("Chat Application" + " - " + userId);
     JPanel panel = new JPanel();
-    JScrollPane scrollPane = new JScrollPane(msgListComponent);
+    JScrollPane scrollPane = new JScrollPane(msgDisplay);
     JTextField entryField = new JTextField(50);
     JButton sendBtn = new JButton("Send");
     JButton createRoomBtn = new JButton("Create Room");
     JButton leaveRoomBtn = new JButton("Leave Room");
+
 
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.setLocationRelativeTo(null);
@@ -174,7 +119,7 @@ public class ClientGUI implements Runnable {
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-    JScrollPane usersScrollPane = new JScrollPane(usersInRoomComponent);
+    JScrollPane usersScrollPane = new JScrollPane(usersDisplay);
 
     sendBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -204,12 +149,20 @@ public class ClientGUI implements Runnable {
       public void actionPerformed(ActionEvent e) {
         Message message = new Message(MessageType.LeaveRoom);
 
-        message.setRoomId(roomListComponent.getSelectedValue());
+        message.setRoomId(roomsDisplay.getSelectedValue());
         message.setUserId(userId);
-        rooms.remove(getCurrentRoom(message.getRoomId()));
-        roomListComponent.setSelectedIndex(0);
-        updateUI();
-        outMsgs.add(message);
+        rooms.remove(getCurrentRoom());
+        sendMsg(message);
+
+        if (rooms.size() > 0) {
+          updateRoomsDisplay();
+          roomsDisplay.setSelectedIndex(0);
+          updateMsgDisplay(getCurrentRoom());
+          updateUserDisplay(getCurrentRoom());
+        } else {
+          msgDisplay.setText("");
+          usersDisplay.setText("");
+        }
       }
     });
 
@@ -219,7 +172,7 @@ public class ClientGUI implements Runnable {
       }
     });
 
-    panel.add(createScrollingRoomList());
+    panel.add(createRoomsScrollPane());
     panel.add(scrollPane);
     panel.add(usersScrollPane);
     panel.add(entryField);
@@ -227,6 +180,19 @@ public class ClientGUI implements Runnable {
     panel.add(sendBtn);
     panel.add(leaveRoomBtn);
     panel.add(createRoomBtn);
+    panel.add(createStatusBox());
+
+    if (currUser.getRole() == UserRole.IT) {
+      JButton logBtn = new JButton("View Logs");
+
+      logBtn.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          logWindow.setVisible(true);
+        }
+      });
+
+      panel.add(logBtn);
+    }
 
     frame.add(panel);
     frame.pack();
@@ -235,24 +201,9 @@ public class ClientGUI implements Runnable {
     mainWindow = frame;
   }
 
-  private void sendChat(String text) {
-    Message message = new Message(MessageType.NewChat);
-
-    message.setRoomId(roomListComponent.getSelectedValue());
-    message.setUserId(userId);
-    message.setContents(text);
-    outMsgs.add(message);
-  }
-
-  private JScrollPane createScrollingRoomList() {
-    JScrollPane roomListScrollPane = new JScrollPane(roomListComponent);
-    roomListScrollPane.setViewportView(roomListComponent);
-    roomListScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    roomListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-    return roomListScrollPane;
-  }
-
+  // Creates the window (frame) that allows the user to create a new room
+  // Users are presented with a list of checkboxes, one for each user
+  // Not visible by default
   public void createNewRoomWindow() {
     JFrame frame = new JFrame("Create New Room");
     JPanel panel = new JPanel();
@@ -289,7 +240,7 @@ public class ClientGUI implements Runnable {
           userIds.add(userId);
           message.setUserId(userId);
           message.setUsers(userIds);
-          outMsgs.add(message);
+          sendMsg(message);
         }
 
         frame.setVisible(false);
@@ -308,5 +259,267 @@ public class ClientGUI implements Runnable {
     frame.setVisible(false);
 
     newRoomWindow = frame;
+  }
+
+  // Creates the window (frame) that allows IT users to view logs, containing:
+  // - A text field and button for getting logs for a specific user
+  // - A text field and button for getting logs for a specific room
+  // - A text area for displaying the logs
+  // Not visible by default
+  private void createLogWindow() {
+    JFrame frame = new JFrame("Application Logs");
+    JPanel panel = new JPanel();
+    JTextField usernameField = new JTextField(32);
+    JTextField roomIdField = new JTextField(32);
+    JButton userLogsBtn = new JButton("Get User Logs");
+    JButton roomLogsBtn = new JButton("Get Room Logs");
+
+    logDisplay = new JTextArea(20, 50);
+    logDisplay.setEditable(false);
+    logDisplay.setLineWrap(true);
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+    JScrollPane logScrollPane = new JScrollPane(logDisplay);
+
+    logScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    logScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+    userLogsBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        String username = usernameField.getText();
+
+        if (username.length() > 0) {
+          Message message = new Message(MessageType.GetLogs);
+
+          message.setUserId(userId);
+          message.setContents(username);
+          sendMsg(message);
+          usernameField.setText("");
+          roomIdField.setText("");
+        }
+      }
+    });
+
+    roomLogsBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        String roomId = roomIdField.getText();
+
+        if (roomId.length() > 0) {
+          Message message = new Message(MessageType.GetLogs);
+
+          message.setUserId(userId);
+          message.setRoomId(roomId);
+          sendMsg(message);
+          usernameField.setText("");
+          roomIdField.setText("");
+        }
+      }
+    });
+
+    panel.add(new JLabel("Username"));
+    panel.add(usernameField);
+    panel.add(userLogsBtn);
+    panel.add(new JLabel("Room ID"));
+    panel.add(roomIdField);
+    panel.add(roomLogsBtn);
+    panel.add(logScrollPane);
+
+    frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    frame.setLocationRelativeTo(null);
+    frame.add(panel);
+    frame.pack();
+    frame.setVisible(false);
+
+    logWindow = frame;
+  }
+
+  //
+  // Individual component creation methods
+  //
+
+  // Creates the list of rooms
+  private void createRoomsDisplay() {
+    roomsDisplay = new JList<String>();
+    roomsDisplay.setFixedCellWidth(256);
+    roomsDisplay.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    roomsDisplay.setSelectedIndex(0);
+
+    roomsDisplay.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        if (roomsDisplay.getSelectedIndex() >= 0) {
+          Room currentRoom = getCurrentRoom();
+          
+          if (currentRoom != null) {
+            updateMsgDisplay(currentRoom);
+            updateUserDisplay(currentRoom);
+          }
+        }
+      }
+    });
+
+    updateRoomsDisplay();
+  }
+
+  // Creates the scroll pane that holds the list of rooms
+  private JScrollPane createRoomsScrollPane() {
+    JScrollPane roomsScrollPane = new JScrollPane(roomsDisplay);
+    roomsScrollPane.setViewportView(roomsDisplay);
+    roomsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    roomsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+    return roomsScrollPane;
+  }
+
+  
+  // Creates the text area for displaying messages of the current room
+  private void createMsgDisplay() {
+    msgDisplay = new JTextArea(5, 32);
+    msgDisplay.setEditable(false);
+    msgDisplay.setLineWrap(true);
+
+    Room currentRoom = getCurrentRoom();
+
+    if (currentRoom != null) {
+      updateMsgDisplay(getCurrentRoom());
+    }
+  }
+
+  // Creates the text area for displaying users in the current room
+  private void createUsersDisplay() {
+    usersDisplay = new JTextArea();
+    usersDisplay.setEditable(false);
+    usersDisplay.setLineWrap(true);
+
+    Room currentRoom = getCurrentRoom();
+
+    if (currentRoom != null) {
+      updateUserDisplay(getCurrentRoom());
+    }
+  }
+
+  // Creates the status box that users can change their status from
+  private JComboBox<String> createStatusBox() {
+    String[] statuses = {"Online", "Away", "Busy"};
+    JComboBox<String> statusBox = new JComboBox<String>(statuses);
+
+    statusBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Message message = new Message(MessageType.ChangeStatus);
+        UserStatus status = UserStatus.Online;
+
+        switch (statusBox.getSelectedItem().toString()) {
+          case "Away":
+            status = UserStatus.Away;
+            break;
+          case "Busy":
+            status = UserStatus.Busy;
+            break;
+          default:
+            break;
+        }
+
+        message.setUserId(userId);
+        message.setUserStatus(status);
+        sendMsg(message);
+      }
+    });
+
+    return statusBox;
+  }
+  
+  //
+  // Component update methods
+  //
+
+  private void updateUserDisplay(Room room) {
+    usersDisplay.setText("");
+
+    List<String> users = room.getUsers();
+
+    for (String user : users) {
+      usersDisplay.append(getUserWithStatus(user) + "\n");
+    }
+  }
+
+  private void updateMsgDisplay(Room room) {
+    msgDisplay.setText("");
+
+    String[] messages = room.getMessagesAsArray();
+
+    for (String message : messages) {
+      msgDisplay.append(message + "\n");
+    }
+  }
+
+  private void updateRoomsDisplay() {
+    String[] roomIds = new String[rooms.size()];
+
+    for (int i = 0; i < rooms.size(); i++) {
+      roomIds[i] = rooms.get(i).getId();
+    }
+
+    roomsDisplay.setListData(roomIds);
+  }
+
+  // Helper methods
+
+  // Called when the user clicks the "Send" button or presses enter
+  private void sendChat(String text) {
+    Message message = new Message(MessageType.NewChat);
+
+    message.setRoomId(roomsDisplay.getSelectedValue());
+    message.setUserId(userId);
+    message.setContents(text);
+    sendMsg(message);
+  }
+
+  // Sends a message to the server
+  // Has it's own helper method to avoid placing try/catch blocks everywhere
+  private void sendMsg(Message msg) {
+    try {
+      objOut.writeObject(msg);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  // Returns a nice string of the user's ID and status
+  // For use in displaying in the user list
+  String getUserWithStatus(String userId) {
+    for (User user : users) {
+      if (user.getId().equals(userId)) {
+        String status = "Online";
+
+        switch (user.getStatus()) {
+          case Away:
+            status = "Away";
+            break;
+          case Busy:
+            status = "Busy";
+            break;
+          case Offline:
+            status = "Offline";
+            break;
+          default:
+
+        }
+
+        return user.getId() + " [" + status + "]";
+      }
+    }
+
+    return userId;
+  }
+
+  private Room getCurrentRoom() {
+    String selectedRoom = roomsDisplay.getSelectedValue();
+
+    for (Room room : rooms) {
+      if (room.getId().equals(selectedRoom)) {
+        return room;
+      }
+    }
+
+    return null;
   }
 }
