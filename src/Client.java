@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
@@ -39,29 +38,17 @@ class Client {
 				return;
 			}
 
-			ArrayList<Message> outMsgs = new ArrayList<Message>();
-			ArrayList<Message> inMsgs = new ArrayList<Message>();
-
-			ClientGUI gui = new ClientGUI(inMsgs, outMsgs, rooms, users, currUser.getId());
-			ClientReader reader = new ClientReader(inObj, inMsgs, rooms);
-			ClientWriter writer = new ClientWriter(outObj, outMsgs);
+			ClientGUI gui = new ClientGUI(inObj, outObj, rooms, users, currUser);
 
 			Thread guiThread = new Thread(gui);
-			Thread readerThread = new Thread(reader);
-			Thread writerThread = new Thread(writer);
 
-			// Start the threads
+
 			guiThread.start();
-			readerThread.start();
-			writerThread.start();
 
 			// Busy wait while the threads are running
 			while (true) {
-				// Writer thread will die when a logout message was sent
-				if (!writerThread.isAlive()) {
-					// Stop the other threads
-					guiThread.interrupt();
-					readerThread.interrupt();
+				// GUI thread will die when the user closes the window
+				if (!guiThread.isAlive()) {
 
 					break;
 				}
@@ -88,7 +75,7 @@ class Client {
 	}
 
 	private static void doLoginFlow(ObjectInputStream inObj, ObjectOutputStream outObj) {
-		JFrame frame = new JFrame();
+		JFrame frame = new JFrame("Login");
 		JPanel panel = new JPanel();
 		JTextField userId = new JTextField(20);
 		JTextField password = new JTextField(20);
@@ -146,6 +133,8 @@ class Client {
 					rooms = response.getRooms();
 					users = response.getUserList();
 					loginWindow.setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(null, response.getContents());
 				}
 			}
 		} catch (Exception e) {
