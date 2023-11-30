@@ -2,8 +2,10 @@ import java.util.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.SocketException;
 
 import javax.swing.*;
 
@@ -478,7 +480,9 @@ public class ClientGUI implements Runnable {
   private void sendMsg(Message msg) {
     try {
       objOut.writeObject(msg);
-    } catch (Exception e) {
+    } catch (SocketException e) {
+      System.exit(0);
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }
