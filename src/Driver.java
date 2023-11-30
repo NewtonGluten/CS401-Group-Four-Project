@@ -5,8 +5,8 @@ public class Driver {
 	//authentication
     UserStorage userStorage = new UserStorage();
     Authenticator authenticator = new Authenticator(userStorage);
-    User user = authenticator.authenticate("randomuser", "pass");
-    System.out.println(user.getId() + ' ' + user.getPassword());
+    // User user = authenticator.authenticate("randomuser", "pass");
+    // System.out.println(user.getId() + ' ' + user.getPassword());
     
     //loading and saving
     RoomStorage roomStorage = new RoomStorage();

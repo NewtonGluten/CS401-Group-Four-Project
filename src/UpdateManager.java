@@ -73,9 +73,9 @@ public class UpdateManager {
         roomsToSend.add(room);
         update = new Message(MessageType.NewRoom);
         update.setRooms(roomsToSend);
+        update.setUsers(message.getUsers());
 
         addUpdate(sender, update, UpdateType.CreateRoom);
-
         break;
       case AddToRoom:
       case LeaveRoom:
@@ -110,6 +110,8 @@ public class UpdateManager {
       case CreateRoom:
         // Users who will be part of the new room should receive the update
         usersToSendTo = update.getUsers();
+
+        break;
       case ModifyRoom:
         // Get the room first
         Room room = roomStorage.getRoomById(update.getRoomId());
@@ -133,7 +135,9 @@ public class UpdateManager {
       User user = userStorage.getUserById(userId);
       UserStatus userStatus = user.getStatus();
 
-      if (userId != sender && userStatus != UserStatus.Offline) {
+      if (type == UpdateType.CreateRoom) {
+        updatesByUserId.get(userId).add(update);
+      } else if (userId != sender && userStatus != UserStatus.Offline) {
         updatesByUserId.get(userId).add(update);
       }
     }

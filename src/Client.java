@@ -9,6 +9,7 @@ import javax.swing.*;
 class Client {
 	private static User currUser = null;
 	private static List<Room> rooms = null;
+	private static List<User> users = null;
 	public static void main(String[] args) throws IOException {
 		String host = args[0];
 		String port = "4014";
@@ -29,7 +30,7 @@ class Client {
 			ArrayList<Message> outMsgs = new ArrayList<Message>();
 			ArrayList<Message> inMsgs = new ArrayList<Message>();
 
-			ClientGUI gui = new ClientGUI(inMsgs, outMsgs, rooms, currUser.getId());
+			ClientGUI gui = new ClientGUI(inMsgs, outMsgs, rooms, users, currUser.getId());
 			ClientReader reader = new ClientReader(inObj, inMsgs, rooms);
 			ClientWriter writer = new ClientWriter(outObj, outMsgs);
 
@@ -109,6 +110,7 @@ class Client {
 						if (response.getUser() != null) {
 							currUser = response.getUser();
 							rooms = response.getRooms();
+							users = response.getUserList();
 						} else {
 							JOptionPane.showMessageDialog(
 								null,

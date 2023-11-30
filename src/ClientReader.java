@@ -27,19 +27,38 @@ public class ClientReader implements Runnable {
           // This is expected behaviour, so we catch it and break out of the loop
           Message msg = (Message) objIn.readObject();
 
-          if (msg.getType() == MessageType.NewChat) {
-            // Update the room client side
-            Room room = getRoomById(msg.getRoomId());
+          switch (msg.getType()) {
+            case NewChat:
+              // Update the room client side
+              Room room = getRoomById(msg.getRoomId());
 
-            room.addMessage(new ChatMessage(
-              msg.getUserId(),
-              msg.getContents(),
-              MessageStatus.Delivered
-            ));
-          } else {
-            // The message doesn't modify the room and should be handled
-            // somewhere else
-            inMsgs.add(msg);
+              room.addMessage(new ChatMessage(
+                msg.getUserId(),
+                msg.getContents(),
+                MessageStatus.Delivered
+              ));
+
+              break;
+            case NewRoom:
+              // Update the room client side
+              List<Room> newRooms = msg.getRooms();
+
+              for (Room newRoom : newRooms) {
+                rooms.add(newRoom);
+              }
+
+              break;
+            case LeaveRoom:
+              // Update the room client side
+              Room roomToLeave = getRoomById(msg.getRoomId());
+
+              roomToLeave.removeUser(msg.getUserId());
+
+              break;
+            default:
+              inMsgs.add(msg);
+
+              break;
           }
 
           Thread.sleep(50);
