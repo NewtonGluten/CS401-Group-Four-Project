@@ -53,7 +53,7 @@ public class ClientReader implements Runnable {
 
               // Update the message display if the current room is the room
               // that the message was sent to
-              if (room.getId().equals(roomsDisplay.getSelectedValue())) {
+              if (room.getId().equals(getCurrentRoomId())) {
                 String chat = "[" + msg.getTimestamp() + "] "
                   + msg.getUserId() + ": "
                   + msg.getContents() + "\n";
@@ -82,7 +82,7 @@ public class ClientReader implements Runnable {
                 
                 // if the current room is the room that the user left,
                 // update the user display and show a message
-                if (roomUserLeft.getId().equals(roomsDisplay.getSelectedValue())) {
+                if (roomUserLeft.getId().equals(getCurrentRoomId())) {
                   msgDisplay.append(msg.getUserId() + " left the room\n");
                   updateUserDisplay(roomUserLeft);
                 }
@@ -103,7 +103,7 @@ public class ClientReader implements Runnable {
 
               // Update the user display if the current room is the room
               // that the user is in
-              Room currentRoom = getRoomById(roomsDisplay.getSelectedValue());
+              Room currentRoom = getRoomById(getCurrentRoomId());
 
               if (currentRoom != null && currentRoom.getUsers().contains(userId)) {
                 updateUserDisplay(currentRoom);
@@ -146,7 +146,7 @@ public class ClientReader implements Runnable {
     String[] roomIds = new String[rooms.size()];
 
     for (int i = 0; i < rooms.size(); i++) {
-      roomIds[i] = rooms.get(i).getId();
+      roomIds[i] = rooms.get(i).getTitle();
     }
 
     roomsDisplay.setListData(roomIds);
@@ -186,5 +186,15 @@ public class ClientReader implements Runnable {
     for (String user : users) {
       usersDisplay.append(getUserWithStatus(user) + "\n");
     }
+  }
+
+  private String getCurrentRoomId() {
+    int i = roomsDisplay.getSelectedIndex();
+
+    if (i == -1) {
+      return null;
+    }
+
+    return rooms.get(i).getId();
   }
 }
