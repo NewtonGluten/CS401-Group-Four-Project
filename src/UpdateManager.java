@@ -71,7 +71,7 @@ public class UpdateManager {
         break;
       case CreateRoom:
         // Create the new room
-        Room room = new Room(message.getUsers());
+        Room room = new Room(message.getUsers(), message.getContents());
         List<Room> roomsToSend = new ArrayList<Room>();
 
         // Add the new room to the server
