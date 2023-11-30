@@ -49,7 +49,6 @@ class Server {
         ClientHandler clientSock = new ClientHandler(
           client,
           authenticator,
-          logger,
           users,
           rooms,
           updateManager
