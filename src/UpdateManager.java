@@ -75,7 +75,7 @@ public class UpdateManager {
         List<Room> roomsToSend = new ArrayList<Room>();
 
         // Add the new room to the server
-        roomStorage.addRoom(room);
+        logger.createRoom(room);
 
         // Create a NewRoom message that will be sent to each user
         // that is in the new room
@@ -88,14 +88,10 @@ public class UpdateManager {
         break;
       case AddToRoom:
       case LeaveRoom:
-        // Add or remove the user from the room on the server first
-        Room roomToUpdate = roomStorage.getRoomById(message.getRoomId());
-
         if (message.getType() == MessageType.AddToRoom) {
-          roomToUpdate.addUser(message.getUserId());
+          logger.addUserToRoom(sender, message.getRoomId());
         } else {
-          roomToUpdate.removeUser(message.getUserId());
-          userStorage.removeRoom(sender, message.getRoomId());
+          logger.removeUserFromRoom(sender, message.getRoomId());
         }
 
         // Create a new AddToRoom or LeaveRoom message that will be sent to
