@@ -77,14 +77,18 @@ public class ClientReader implements Runnable {
               // Update the room client side
               Room roomUserLeft = getRoomById(msg.getRoomId());
 
-              roomUserLeft.removeUser(msg.getUserId());
-              
-              // if the current room is the room that the user left,
-              // update the user display and show a message
-              if (roomUserLeft.getId().equals(roomsDisplay.getSelectedValue())) {
-                msgDisplay.append(msg.getUserId() + " left the room\n");
-                updateUserDisplay(roomUserLeft);
+              if (roomUserLeft != null) {
+                roomUserLeft.removeUser(msg.getUserId());
+                
+                // if the current room is the room that the user left,
+                // update the user display and show a message
+                if (roomUserLeft.getId().equals(roomsDisplay.getSelectedValue())) {
+                  msgDisplay.append(msg.getUserId() + " left the room\n");
+                  updateUserDisplay(roomUserLeft);
+                }
+
               }
+
 
               break;
             case UpdateUserStatus:
