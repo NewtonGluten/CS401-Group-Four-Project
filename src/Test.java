@@ -10,7 +10,9 @@ import org.junit.runners.Suite.SuiteClasses;
 	ChatHistoryTest.class, 
 	RoomTest.class, 
 	UserStorageTest.class, 
-	AuthenticatorTest.class
+	AuthenticatorTest.class,
+	RoomStorageTest.class,
+	//MessageTest.class
 })
 
 public class Test {
