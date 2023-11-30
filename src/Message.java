@@ -14,6 +14,7 @@ public class Message implements Serializable {
 	protected List<User> user_list;
 	protected String contents;
 	protected List<Room> rooms;
+	protected String timestamp;
 
 	public Message (MessageType type){
 		this.type = type;
@@ -30,6 +31,7 @@ public class Message implements Serializable {
 		this.user_list = null;
 		this.contents = null;
 		this.rooms = null;
+		this.timestamp = null;
 	}
 	
 	//making these immutable by not letting them get changed after they're assigned
@@ -92,6 +94,12 @@ public class Message implements Serializable {
 			this.rooms = room;
 		}
 	}
+
+	public void setTimestamp (String timestamp) {
+		if (this.timestamp == null) {
+			this.timestamp = timestamp;
+		}
+	}
 	
 	public MessageType getType() {
 		return this.type;
@@ -137,4 +145,7 @@ public class Message implements Serializable {
 		return this.rooms;
 	}
 	
+	public String getTimestamp() {
+		return this.timestamp;
+	}
 }
