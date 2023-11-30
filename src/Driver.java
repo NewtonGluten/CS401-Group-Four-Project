@@ -16,6 +16,7 @@ public class Driver {
     room.addMessage(new ChatMessage("randomuser", "hi again", MessageStatus.Delivered));
     room.addMessage(new ChatMessage("anotheruser", "lo again", MessageStatus.Delivered));*/
     Logger logger = new Logger(roomStorage, userStorage);
+    System.out.println(roomStorage.getRoomById("be108892-d79b-40c9-a9be-30eba420d1f0"));
     //logger.createRoom(room);
     logger.save();
   }

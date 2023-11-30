@@ -29,6 +29,8 @@ public class RoomTest {
 		}
 		//test UUID
 		assertEquals(room.getId().length(), 36);
+		//title should be default
+		assertEquals(room.getTitle(), "user1's Room");
 		//messages should be empty after constructor creation
 		assertTrue(room.getMessages().isEmpty());
 		//the room should no be empty (2 users)
@@ -53,6 +55,50 @@ public class RoomTest {
 		//the users are stored correctly
 		assertEquals(stored.substring(18), "user1,user2,user3,\n");
 
+	}
+	
+	@Test
+	public void testTitleConstructor() {
+		List<String> users = new ArrayList<String>();
+		users.add("user1");
+		users.add("user2");
+		users.add("user3");
+		
+		Room room = new Room(users, "The Room of Rooms");
+		assertNotNull(room);
+		
+		List<String> userList = room.getUsers();
+		
+		for (int i = 0; i < 3; i++) {
+			assertEquals(users.get(i), userList.get(i));
+		}
+		//test UUID
+		assertEquals(room.getId().length(), 36);
+		//title should be as set
+		assertEquals(room.getTitle(), "The Room of Rooms");
+		//messages should be empty after constructor creation
+		assertTrue(room.getMessages().isEmpty());
+		//the room should no be empty (2 users)
+		assertFalse(room.isEmpty());
+		
+		long time = room.getCreationDate().getTime();
+		
+		//the creation date should be roughly the current time
+		assertTrue(new Date().getTime() - time < 100);
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm:ss");
+		String stored = room.toString();
+		
+		//the date is stored correctly
+		try {
+			//check if the values are within 1 second
+			assertTrue(Math.abs(time - simpleDateFormat.parse(stored.substring(0, 17)).getTime()) < 1000);
+		} catch(ParseException e) {
+			fail("Date stored incorrectly");
+		}
+		
+		//the users are stored correctly
+		assertEquals(stored.substring(18), "user1,user2,user3,\n");
 	}
 	
 	@Test
