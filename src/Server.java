@@ -11,7 +11,7 @@ class Server {
     Authenticator authenticator = new Authenticator(users);
     RoomStorage rooms = new RoomStorage();
     Logger logger = new Logger(rooms, users);
-    UpdateManager updateManager = new UpdateManager(rooms, users);
+    UpdateManager updateManager = new UpdateManager(rooms, users, logger);
     
     //TODO: remove debug print
     System.out.println("users: " + users.hashCode() + "\n" +
