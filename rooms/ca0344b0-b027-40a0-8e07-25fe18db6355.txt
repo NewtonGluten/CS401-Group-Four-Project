@@ -1,3 +1,6 @@
 room title goes here
 11-29-23 14:58:39
-aaron,ben,kosta,
+ben,kosta,
+[ba3edd6e-c65d-41c2-aa3f-8884861edc04][aaron@11-30-23 13:55:00]:asfhn[]
+[bf6926e6-1da5-4b46-adf1-ff4686286c22][aaron@11-30-23 13:55:01]:disfk
+[903b22d3-500f-48e3-81b8-d2814a33fd76][aaron@11-30-23 13:55:56]:left the room
