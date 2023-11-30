@@ -151,7 +151,7 @@ public class ClientGUI implements Runnable {
       public void actionPerformed(ActionEvent e) {
         Message message = new Message(MessageType.LeaveRoom);
 
-        message.setRoomId(roomsDisplay.getSelectedValue());
+        message.setRoomId(getCurrentRoomId());
         message.setUserId(userId);
         rooms.remove(getCurrentRoom());
         sendMsg(message);
@@ -212,6 +212,9 @@ public class ClientGUI implements Runnable {
     JButton createBtn = new JButton("Create");
     JCheckBox[] checkboxes = new JCheckBox[users.size()];
     JPanel userList = new JPanel();
+    JTextField roomNameField = new JTextField(32);
+
+    roomNameField.setText(userId + "'s Room");
 
     for (int i = 0; i < users.size(); i++) {
       checkboxes[i] = new JCheckBox(users.get(i).getId());
@@ -236,11 +239,12 @@ public class ClientGUI implements Runnable {
           }
         }
 
-        if (userIds.size() > 0) {
+        if (userIds.size() > 0 && roomNameField.getText().length() > 0) {
           Message message = new Message(MessageType.CreateRoom);
 
           userIds.add(userId);
           message.setUserId(userId);
+          message.setContents(roomNameField.getText());
           message.setUsers(userIds);
           sendMsg(message);
         }
@@ -250,6 +254,8 @@ public class ClientGUI implements Runnable {
     });
 
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.add(new JLabel("Room Name"));
+    panel.add(roomNameField);
     panel.add(userListScrollPane);
     panel.add(createBtn);
 
@@ -457,7 +463,7 @@ public class ClientGUI implements Runnable {
     String[] roomIds = new String[rooms.size()];
 
     for (int i = 0; i < rooms.size(); i++) {
-      roomIds[i] = rooms.get(i).getId();
+      roomIds[i] = rooms.get(i).getTitle();
     }
 
     roomsDisplay.setListData(roomIds);
@@ -469,7 +475,7 @@ public class ClientGUI implements Runnable {
   private void sendChat(String text) {
     Message message = new Message(MessageType.NewChat);
 
-    message.setRoomId(roomsDisplay.getSelectedValue());
+    message.setRoomId(getCurrentRoomId());
     message.setUserId(userId);
     message.setContents(text);
     sendMsg(message);
@@ -516,12 +522,23 @@ public class ClientGUI implements Runnable {
   }
 
   private Room getCurrentRoom() {
-    String selectedRoom = roomsDisplay.getSelectedValue();
+    int i = roomsDisplay.getSelectedIndex() < 0 ? 0 : roomsDisplay.getSelectedIndex();
+    String selectedRoomId = rooms.get(i).getId();
 
     for (Room room : rooms) {
-      if (room.getId().equals(selectedRoom)) {
+      if (room.getId().equals(selectedRoomId)) {
         return room;
       }
+    }
+
+    return null;
+  }
+
+  private String getCurrentRoomId() {
+    Room room = getCurrentRoom();
+
+    if (room != null) {
+      return room.getId();
     }
 
     return null;
