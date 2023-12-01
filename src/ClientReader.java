@@ -9,6 +9,7 @@ public class ClientReader implements Runnable {
   private ObjectInputStream objIn;
   private List<Room> rooms;
   private List<User> users;
+  private String currUserId;
   private JList<String> roomsDisplay;
   private JTextArea msgDisplay;
   private JTextArea usersDisplay;
@@ -18,6 +19,7 @@ public class ClientReader implements Runnable {
     ObjectInputStream objIn, 
     List<Room> rooms,
     List<User> users,
+    String currUserId,
     JList<String> roomsDisplay,
     JTextArea msgDisplay,
     JTextArea usersDisplay,
@@ -26,6 +28,7 @@ public class ClientReader implements Runnable {
     this.objIn = objIn;
     this.rooms = rooms;
     this.users = users;
+    this.currUserId = currUserId;
     this.roomsDisplay = roomsDisplay;
     this.msgDisplay = msgDisplay;
     this.usersDisplay = usersDisplay;
@@ -54,11 +57,11 @@ public class ClientReader implements Runnable {
               // Update the message display if the current room is the room
               // that the message was sent to
               if (room.getId().equals(getCurrentRoomId())) {
-                String chat = "[" + msg.getTimestamp() + "] "
+                msgDisplay.append(
+                  "[" + msg.getTimestamp() + "] "
                   + msg.getUserId() + ": "
-                  + msg.getContents() + "\n";
-
-                msgDisplay.append(chat);
+                  + msg.getContents() + "\n"
+                );
               }
 
               break;
@@ -72,6 +75,12 @@ public class ClientReader implements Runnable {
 
               updateRoomsDisplay();
 
+              // If the current user is the one that made the room,
+              // automatically select the room
+              if (msg.getUserId().equals(currUserId)) {
+                roomsDisplay.setSelectedIndex(rooms.size() - 1);
+              }
+
               break;
             case LeaveRoom:
               // Update the room client side
@@ -83,12 +92,35 @@ public class ClientReader implements Runnable {
                 // if the current room is the room that the user left,
                 // update the user display and show a message
                 if (roomUserLeft.getId().equals(getCurrentRoomId())) {
-                  msgDisplay.append(msg.getUserId() + " left the room\n");
+                  msgDisplay.append(
+                    "[" + msg.getTimestamp() + "] "
+                    + msg.getUserId()
+                    + ": left the room\n"
+                  );
                   updateUserDisplay(roomUserLeft);
                 }
-
               }
 
+              break;
+            case AddToRoom:
+              // Update the room client side
+              Room roomToUpdate = getRoomById(msg.getRoomId());
+              String userAdded = msg.getContents();
+
+              if (roomToUpdate != null) {
+                roomToUpdate.addUser(userAdded);
+
+                // if the current room is the room that the user was added to,
+                // update the user display and show a message
+                if (roomToUpdate.getId().equals(getCurrentRoomId())) {
+                  msgDisplay.append(
+                    "[" + msg.getTimestamp() + "] "
+                    + userAdded
+                    + ": added to the room\n"
+                  );
+                  updateUserDisplay(roomToUpdate);
+                }
+              }
 
               break;
             case UpdateUserStatus:
@@ -168,7 +200,7 @@ public class ClientReader implements Runnable {
             status = "Offline";
             break;
           default:
-
+            break;
         }
 
         return user.getId() + " [" + status + "]";
@@ -196,5 +228,11 @@ public class ClientReader implements Runnable {
     }
 
     return rooms.get(i).getId();
+  }
+
+  private String formatChatMsg(Message msg, String contents) {
+    return "[" + msg.getTimestamp() + "] "
+      + msg.getUserId() + ": "
+      + contents + "\n";
   }
 }

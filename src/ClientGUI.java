@@ -20,6 +20,7 @@ public class ClientGUI implements Runnable {
   private JList<String> roomsDisplay;
   private JFrame mainWindow;
   private JFrame newRoomWindow;
+  private JFrame addUserWindow;
   private JTextArea logDisplay;
   private JFrame logWindow;
 
@@ -45,6 +46,7 @@ public class ClientGUI implements Runnable {
     createMsgDisplay();
     createUsersDisplay();
     createNewRoomWindow();
+    createAddUserWindow();
 
     this.logDisplay = null;
 
@@ -61,6 +63,7 @@ public class ClientGUI implements Runnable {
         objIn,
         rooms,
         users,
+        userId,
         roomsDisplay,
         msgDisplay,
         usersDisplay,
@@ -102,6 +105,7 @@ public class ClientGUI implements Runnable {
   // - The text field for entering messages
   // - The send button
   // - The leave room button
+  // - The add user button
   // - The create room button
   // - The status box
   // - The view logs button (only visible to IT users)
@@ -112,8 +116,8 @@ public class ClientGUI implements Runnable {
     JTextField entryField = new JTextField(50);
     JButton sendBtn = new JButton("Send");
     JButton createRoomBtn = new JButton("Create Room");
+    JButton addUserBtn = new JButton("Add User");
     JButton leaveRoomBtn = new JButton("Leave Room");
-
 
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.setLocationRelativeTo(null);
@@ -174,6 +178,12 @@ public class ClientGUI implements Runnable {
       }
     });
 
+    addUserBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        addUserWindow.setVisible(true);
+      }
+    });
+
     panel.add(createRoomsScrollPane());
     panel.add(scrollPane);
     panel.add(usersScrollPane);
@@ -181,6 +191,7 @@ public class ClientGUI implements Runnable {
 
     panel.add(sendBtn);
     panel.add(leaveRoomBtn);
+    panel.add(addUserBtn);
     panel.add(createRoomBtn);
     panel.add(createStatusBox());
 
@@ -247,6 +258,7 @@ public class ClientGUI implements Runnable {
           message.setContents(roomNameField.getText());
           message.setUsers(userIds);
           sendMsg(message);
+          roomNameField.setText(userId + "'s Room");
         }
 
         frame.setVisible(false);
@@ -341,6 +353,60 @@ public class ClientGUI implements Runnable {
     logWindow = frame;
   }
 
+  private void createAddUserWindow() {
+    JFrame frame = new JFrame("Add User");
+    JPanel panel = new JPanel();
+    JButton addUserBtn = new JButton("Add User");
+    JTextField usernameField = new JTextField(32);
+
+    addUserBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        String username = usernameField.getText();
+
+        if (username.length() > 0) {
+          if (getCurrentRoom().getUsers().contains(username)) {
+            JOptionPane.showMessageDialog(
+              frame,
+              "User is already in the room",
+              "Error",
+              JOptionPane.ERROR_MESSAGE
+            );
+            return;
+          } else if (userExists(username)) {
+            Message message = new Message(MessageType.AddToRoom);
+  
+            message.setUserId(userId);
+            message.setContents(username);
+            message.setRoomId(getCurrentRoomId());
+            sendMsg(message);
+            usernameField.setText("");
+  
+            addUserWindow.setVisible(false);
+          } else {
+            JOptionPane.showMessageDialog(
+              frame,
+              "User does not exist",
+              "Error",
+              JOptionPane.ERROR_MESSAGE
+            );
+          }
+        }
+      }
+    });
+
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.add(new JLabel("Username"));
+    panel.add(usernameField);
+    panel.add(addUserBtn);
+
+    frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    frame.setLocationRelativeTo(null);
+    frame.add(panel);
+    frame.pack();
+    frame.setVisible(false);
+
+    addUserWindow = frame;
+  }
   //
   // Individual component creation methods
   //
@@ -511,8 +577,8 @@ public class ClientGUI implements Runnable {
             status = "Offline";
             break;
           default:
-
-        }
+            break;
+        } 
 
         return user.getId() + " [" + status + "]";
       }
@@ -542,5 +608,15 @@ public class ClientGUI implements Runnable {
     }
 
     return null;
+  }
+
+  private boolean userExists(String userId) {
+    for (User user : users) {
+      if (user.getId().equals(userId)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

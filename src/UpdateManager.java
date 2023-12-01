@@ -82,23 +82,50 @@ public class UpdateManager {
         roomsToSend.add(room);
         update = new Message(MessageType.NewRoom);
         update.setRooms(roomsToSend);
+        update.setUserId(sender);
         update.setUsers(message.getUsers());
 
         addUpdate(sender, update, UpdateType.CreateRoom);
+
         break;
       case AddToRoom:
-      case LeaveRoom:
-        if (message.getType() == MessageType.AddToRoom) {
-          logger.addUserToRoom(sender, message.getRoomId());
-        } else {
-          logger.removeUserFromRoom(sender, message.getRoomId());
+        logger.addUserToRoom(message.getContents(), message.getRoomId());
+
+        // That user needs that room to be sent to them
+        Room roomToSend = roomStorage.getRoomById(message.getRoomId());
+        List<Room> roomsToSendToUser = new ArrayList<Room>();
+        roomsToSendToUser.add(roomToSend);
+        Message roomUpdate = new Message(MessageType.NewRoom);
+        roomUpdate.setRooms(roomsToSendToUser);
+        updatesByUserId.get(message.getContents()).add(roomUpdate);
+
+        // And then send the user to everyone else in the room
+        update = new Message(MessageType.AddToRoom);
+        update.setUserId(sender);
+        update.setContents(message.getContents());
+        update.setRoomId(message.getRoomId());
+        update.setTimestamp(getTime());
+
+        for (String userId : roomToSend.getUsers()) {
+          User user = userStorage.getUserById(userId);
+          UserStatus status = user.getStatus();
+
+          if (!userId.equals(message.getContents()) && status != UserStatus.Offline) {
+            updatesByUserId.get(userId).add(update);
+          }
         }
+
+        break;
+      case LeaveRoom:
+        logger.removeUserFromRoom(sender, message.getRoomId());
 
         // Create a new AddToRoom or LeaveRoom message that will be sent to
         // all other users in the room
         update = new Message(message.getType());
         update.setUserId(sender);
+        update.setContents(message.getContents());
         update.setRoomId(message.getRoomId());
+        update.setTimestamp(getTime());
 
         addUpdate(sender, update, UpdateType.ModifyRoom);
 
@@ -123,7 +150,7 @@ public class UpdateManager {
     }
   }
 
-  public void addUpdate(String sender, Message update, UpdateType type) {
+  private void addUpdate(String sender, Message update, UpdateType type) {
     // The update type determines which users will receive the update
     List<String> usersToSendTo = null;
 
@@ -151,14 +178,19 @@ public class UpdateManager {
         break;
     }
 
+    if (update.getType() == MessageType.UpdateUserStatus
+      && update.getUserId().equals(sender)
+    ) {
+      // Don't send the update to the user who sent it
+      usersToSendTo.remove(sender);
+    }
+
     // Add the update to the list of updates for each user, except the sender
     for (String userId : usersToSendTo) {
       User user = userStorage.getUserById(userId);
       UserStatus userStatus = user.getStatus();
 
-      if (type == UpdateType.CreateRoom) {
-        updatesByUserId.get(userId).add(update);
-      } else if (userId != sender && userStatus != UserStatus.Offline) {
+      if (userStatus != UserStatus.Offline) {
         updatesByUserId.get(userId).add(update);
       }
     }
