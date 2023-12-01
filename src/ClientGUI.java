@@ -166,6 +166,7 @@ public class ClientGUI implements Runnable {
           updateMsgDisplay(getCurrentRoom());
           updateUserDisplay(getCurrentRoom());
         } else {
+          updateRoomsDisplay();
           msgDisplay.setText("");
           usersDisplay.setText("");
         }
@@ -588,6 +589,10 @@ public class ClientGUI implements Runnable {
   }
 
   private Room getCurrentRoom() {
+    if (rooms.size() == 0) {
+      return null;
+    }
+
     int i = roomsDisplay.getSelectedIndex() < 0 ? 0 : roomsDisplay.getSelectedIndex();
     String selectedRoomId = rooms.get(i).getId();
 
