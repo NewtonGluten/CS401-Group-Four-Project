@@ -57,8 +57,9 @@ public class Logger {
 	}
 
 	public String getLogsForUser(String userId) {
-		List<String> roomIds = userStorage.getUserRooms(userId);
+		Set<String> roomIds = roomStorage.getAllRooms();
 		String s = "";
+
 		for (String roomId : roomIds) {
 			Room room = roomStorage.getRoomById(roomId);
 			ChatHistory chatHistory = room.getChatHistory();
