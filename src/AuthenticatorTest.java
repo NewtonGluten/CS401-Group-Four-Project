@@ -9,19 +9,26 @@ public class AuthenticatorTest {
 		UserStorage userStorage = new UserStorage();
 		
 		Authenticator authenticator = new Authenticator(userStorage);
-		
-		assertNull(authenticator.authenticate("this user doesn't exist", "pass"));
-		
+		//test nonexistent user
+		Message nonexistentMsg = authenticator.authenticate("this user doesn't exist", "pass");
+		assertNull(nonexistentMsg.getUser());
+		assertEquals(nonexistentMsg.getContents(), "User does not exist");
+		//test right and wrong password
 		Message normalUserMsg = authenticator.authenticate("user1", "pass");
 		User normalUser = normalUserMsg.getUser();
-		assertNotNull(normalUser);
-		assertNull(authenticator.authenticate("user1", "wrong password"));
+		assertNotNull(normalUserMsg.getUser());
+		Message wrongPasswordMsg = authenticator.authenticate("user1", "wrong password");
+		User wrongPasswordUser = wrongPasswordMsg.getUser();
+		assertNull(wrongPasswordUser);
+		assertEquals(wrongPasswordMsg.getContents(), "Password is incorrect");
+		//test status is online
 		assertEquals(normalUser.getStatus(), UserStatus.Online);
 		
+		//same test for IT user
 		Message ITUserMsg = authenticator.authenticate("long name it user with spaces", "password");
 		User ITUser = ITUserMsg.getUser();
 		assertNotNull(ITUser);
-		assertNull(authenticator.authenticate("long name it user with spaces", "wrong password"));
+		assertNull(authenticator.authenticate("long name it user with spaces", "wrong password").getUser());
 		assertEquals(normalUser.getStatus(), UserStatus.Online);
 	}
 }
