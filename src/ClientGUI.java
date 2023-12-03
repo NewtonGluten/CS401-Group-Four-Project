@@ -1,7 +1,11 @@
 import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.*;
 import javax.swing.event.*;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -111,21 +115,53 @@ public class ClientGUI implements Runnable {
   // - The view logs button (only visible to IT users)
   private void createMainWindow() {
     JFrame frame = new JFrame("Chat Application" + " - " + userId);
-    JPanel panel = new JPanel();
+    
+    
+    JPanel roomPanel = new JPanel();
+    JPanel roomScrollPanel = new JPanel(new GridLayout());
+    JPanel roomOptionsPanel = new JPanel(new FlowLayout());
+    JPanel centerPanel = new JPanel();
+    JPanel inputTextPanel = new JPanel();
+    JPanel headerPanel = new JPanel();
+    JPanel textFieldPanel = new JPanel();
+    JPanel userPanel = new JPanel();
+    
+    
     JScrollPane scrollPane = new JScrollPane(msgDisplay);
-    JTextField entryField = new JTextField(50);
+    JScrollPane usersScrollPane = new JScrollPane(usersDisplay);
+
+    
+    JTextField entryField = new JTextField(30);
+    
+    
+
+    
     JButton sendBtn = new JButton("Send");
     JButton createRoomBtn = new JButton("Create Room");
     JButton addUserBtn = new JButton("Add User");
     JButton leaveRoomBtn = new JButton("Leave Room");
+    JButton logBtn = new JButton("View Logs");
+    logBtn.setVisible(false);
+    
+    
+    JLabel currentRoomLabel = new JLabel("CURRENT ROOM: INSERT ROOM HERE");
+    JLabel setStatusLabel = new JLabel("Set status");
+    JLabel usersInRoomLabel = new JLabel("Users in room");
+    JLabel roomList = new JLabel("Room List");
+    JLabel messageHistory = new JLabel("Messages");
+
 
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.setLocationRelativeTo(null);
-    panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+
+    inputTextPanel.setLayout(new BoxLayout(inputTextPanel, BoxLayout.X_AXIS));
+
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-    JScrollPane usersScrollPane = new JScrollPane(usersDisplay);
+
+    
+    
 
     sendBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -155,6 +191,7 @@ public class ClientGUI implements Runnable {
       public void actionPerformed(ActionEvent e) {
         Message message = new Message(MessageType.LeaveRoom);
 
+
         message.setRoomId(getCurrentRoomId());
         message.setUserId(userId);
         rooms.remove(getCurrentRoom());
@@ -178,26 +215,47 @@ public class ClientGUI implements Runnable {
         newRoomWindow.setVisible(true);
       }
     });
-
+    
     addUserBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         addUserWindow.setVisible(true);
       }
     });
+    
+    // Room panel which is set to WEST on the frame
+    // Has the following: 	room scroll
+    //						create room button
+    //						add user to room button
+    //						Leave room button
+    roomScrollPanel.add(createRoomsScrollPane());
+    roomOptionsPanel.add(createRoomBtn);
+    roomOptionsPanel.add(addUserBtn);
+    roomOptionsPanel.add(leaveRoomBtn);
+    roomOptionsPanel.add(logBtn);
+    
+    roomPanel.add(roomList);
+    roomPanel.add(roomScrollPanel, BorderLayout.NORTH);
+    roomPanel.add(roomOptionsPanel, BorderLayout.SOUTH);
 
-    panel.add(createRoomsScrollPane());
-    panel.add(scrollPane);
-    panel.add(usersScrollPane);
-    panel.add(entryField);
 
-    panel.add(sendBtn);
-    panel.add(leaveRoomBtn);
-    panel.add(addUserBtn);
-    panel.add(createRoomBtn);
-    panel.add(createStatusBox());
+    headerPanel.add(currentRoomLabel);
+    
+    JComboBox<String> statusBox = createStatusBox();
+    userPanel.add(usersInRoomLabel);
+    userPanel.add(usersScrollPane, BorderLayout.NORTH);
+    userPanel.add(setStatusLabel);
+    userPanel.add(statusBox, BorderLayout.SOUTH);
+    
+    textFieldPanel.add(entryField);
+    inputTextPanel.add(textFieldPanel);
+    inputTextPanel.add(sendBtn);
+    
+    centerPanel.add(messageHistory);
+    centerPanel.add(scrollPane, BorderLayout.NORTH);
+    centerPanel.add(inputTextPanel, BorderLayout.SOUTH);
 
+    
     if (currUser.getRole() == UserRole.IT) {
-      JButton logBtn = new JButton("View Logs");
 
       logBtn.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -205,12 +263,69 @@ public class ClientGUI implements Runnable {
         }
       });
 
-      panel.add(logBtn);
+      logBtn.setVisible(true);
+      //mainPanel.add(logBtn);
     }
+    // Button sizes
+    createRoomBtn.setPreferredSize(new Dimension(170,30));
+    addUserBtn.setPreferredSize(new Dimension(170,30));
+    leaveRoomBtn.setPreferredSize(new Dimension(170,30));
+    logBtn.setPreferredSize(new Dimension(170,30));
+    
+    //sendBtn.setPreferredSize(new Dimension(80, 20));
+    
+    // FRAME AND PANEL SIZE SETTINGS
+    // VERY PARTICULAR
+    //						800
+    // ------------------------------------------------------------
+    // |                                                          |
+    // |----------------------------------------------------------|
+    // |          |                                |              |
+    // |          |                                |              | 
+    // |          |                                |              |
+    // |          |                                |              |  600
+    // |          |                                |              |
+    // |          |                                |              |
+    // |----------|                                |              |
+    // |          |                                |              |
+    // |          |                                |              |
+    // ------------------------------------------------------------
+    //
+    frame.setPreferredSize(new Dimension			(800, 600));
 
-    frame.add(panel);
+    roomScrollPanel.setPreferredSize(new Dimension	(180, 380));
+    roomOptionsPanel.setPreferredSize(new Dimension	(180, 180));
+    
+    centerPanel.setPreferredSize(new Dimension		(400, 600));
+    scrollPane.setPreferredSize(new Dimension		(380, 470));
+    
+    userPanel.setPreferredSize(new Dimension 		(200, 600));
+    usersScrollPane.setPreferredSize(new Dimension 	(180, 400));
+    statusBox.setPreferredSize(new Dimension		(180, 40));
+    
+    
+    
+    
+    
+    headerPanel.setPreferredSize(new Dimension		(780, 30 ));
+    
+    roomPanel.setPreferredSize(new Dimension		(200, 500));
+    
+    //roomPanel.setBackground(Color.gray);
+    //roomScrollPanel.setBackground(Color.gray);
+
+    frame.getContentPane().setBackground(Color.blue);
+    
+    //frame.getContentPane().add(headerPanel, BorderLayout.NORTH);
+    frame.getContentPane().add(roomPanel, BorderLayout.WEST);
+    frame.getContentPane().add(centerPanel, BorderLayout.CENTER);
+    frame.getContentPane().add(userPanel, BorderLayout.EAST);
+    //frame.add(mainPanel);
     frame.pack();
+    frame.setLocationRelativeTo(null);
     frame.setVisible(true);
+    frame.setResizable(false);
+
 
     mainWindow = frame;
   }
@@ -271,12 +386,12 @@ public class ClientGUI implements Runnable {
     panel.add(roomNameField);
     panel.add(userListScrollPane);
     panel.add(createBtn);
-
+    
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    frame.setLocationRelativeTo(null);
     
     frame.add(panel);
     frame.pack();
+    frame.setLocationRelativeTo(null);
     frame.setVisible(false);
 
     newRoomWindow = frame;
@@ -346,9 +461,9 @@ public class ClientGUI implements Runnable {
     panel.add(logScrollPane);
 
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    frame.setLocationRelativeTo(null);
     frame.add(panel);
     frame.pack();
+    frame.setLocationRelativeTo(null);
     frame.setVisible(false);
 
     logWindow = frame;
@@ -401,9 +516,9 @@ public class ClientGUI implements Runnable {
     panel.add(addUserBtn);
 
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    frame.setLocationRelativeTo(null);
     frame.add(panel);
     frame.pack();
+    frame.setLocationRelativeTo(null);
     frame.setVisible(false);
 
     addUserWindow = frame;

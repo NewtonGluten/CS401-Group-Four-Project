@@ -3,6 +3,9 @@ import java.net.Socket;
 import java.util.List;
 
 import javax.swing.*;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.*;
 
 // Client class
@@ -77,18 +80,24 @@ class Client {
 	private static void doLoginFlow(ObjectInputStream inObj, ObjectOutputStream outObj) {
 		JFrame frame = new JFrame("Login");
 		JPanel panel = new JPanel();
+		JPanel userIdPanel = new JPanel();
+		JPanel passwordPanel = new JPanel();
 		JTextField userId = new JTextField(20);
-		JTextField password = new JTextField(20);
+		JPasswordField password = new JPasswordField(20);
 		JButton loginBtn = new JButton("Login");
 		
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		frame.setLocationRelativeTo(null);
 
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		panel.add(new JLabel("User ID"));
-		panel.add(userId);
-		panel.add(new JLabel("Password"));
-		panel.add(password);
+		userIdPanel.add(new JLabel("User ID    "));
+		userIdPanel.add(userId, BorderLayout.SOUTH);
+		passwordPanel.add(new JLabel("Password"));
+		passwordPanel.add(password, BorderLayout.SOUTH);
+		
+		panel.add(userIdPanel, BorderLayout.NORTH);
+		panel.add(passwordPanel, BorderLayout.SOUTH);
+		panel.add(loginBtn);
+		
+		
 
 		loginBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -108,11 +117,13 @@ class Client {
 			}
 		});
 
-		panel.add(loginBtn);
-
+		
+		frame.setPreferredSize(new Dimension(350,150));
 		frame.add(panel);
 		frame.pack();
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+	    frame.setResizable(false);
 
 		loginWindow = frame;
 	}
