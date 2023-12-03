@@ -101,4 +101,17 @@ public class UserStorage {
 		return users.keySet();
 	}
 	
+	public List<User> getUserList(String userId) {
+		List<User> userList = new ArrayList<User>();
+
+		for (String user : getAllUsers()) {
+			if (!user.equals(userId)) {
+				userList.add(users.get(user));
+			}
+		}
+
+		userList.sort((a, b) -> a.getId().compareTo(b.getId()));
+
+		return userList;
+	}
 }

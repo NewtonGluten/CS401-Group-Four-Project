@@ -55,4 +55,43 @@ public class Logger {
 		roomStorage.removeUser(roomId, userId);
 		userStorage.removeRoom(userId, roomId);
 	}
+
+	public String getLogsForUser(String userId) {
+		Set<String> roomIds = roomStorage.getAllRooms();
+		String s = "";
+
+		for (String roomId : roomIds) {
+			Room room = roomStorage.getRoomById(roomId);
+			ChatHistory chatHistory = room.getChatHistory();
+			List<ChatMessage> messages = chatHistory.getMessagesFromUser(userId);
+
+			if (messages.isEmpty()) {
+				continue;
+			}
+
+			s += "Room ID: " + room.getId() + "\n";	
+
+			for (ChatMessage message : messages) {
+				s += message + "\n";
+			}
+
+			s += "================================\n";
+		}
+
+		if (s.isEmpty()) {
+			s = "No logs found for " + userId;
+		}
+
+		return s;
+	}
+
+	public String getLogForRoom(String roomId) {
+		Room room = roomStorage.getRoomById(roomId);
+
+		if (room == null) {
+			return "Room with ID " + roomId + " does not exist";
+		}
+
+		return room.toString();
+	}
 }

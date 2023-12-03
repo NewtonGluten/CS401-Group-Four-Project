@@ -7,7 +7,6 @@ public class ClientHandler implements Runnable {
   private UserStorage users;
   private Authenticator authenticator;
   private RoomStorage rooms;
-  private Logger logger;
 	private UpdateManager updateManager;
   private boolean is_logged_in;
   private String user_id;
@@ -19,7 +18,6 @@ public class ClientHandler implements Runnable {
   public ClientHandler(
 		Socket client_socket,
 		Authenticator authenticator,
-		Logger logger,
 		UserStorage users,
 		RoomStorage rooms,
 		UpdateManager updateManager
@@ -28,7 +26,6 @@ public class ClientHandler implements Runnable {
     this.users = users;
     this.authenticator = authenticator;
     this.rooms = rooms;
-    this.logger = logger;
     this.updateManager = updateManager;
   }
 
@@ -53,6 +50,10 @@ public class ClientHandler implements Runnable {
     	//Authentication Loop
     	do {
 				message = (Message) inObj.readObject();
+
+				if (message == null) {
+					return;
+				}
 				
 				if (message.getType() == MessageType.Login) {
 						//Authenticate user
@@ -71,34 +72,32 @@ public class ClientHandler implements Runnable {
 					// Doing this update the user's status as Online for everyone else
 					updateManager.handleMessage(message);
 
-					// TODO: send the entire user list too
-					
 					//Send client the User object, list of Rooms they're in
 					//get list of room IDs that a user is in
 					//then get the list of rooms based on those IDs 
 					message.setRooms(rooms.getRoomsForUser(users.getUserRooms(user_id)));
+					message.setUserList(users.getUserList(user_id));
 				}
 				
 				outObj.writeObject(message);
     	} while (!is_logged_in);
 
 			// This is done down here because it's unnecessary to create the
-			// reader and writer threads if the user failed to login
-			ClientHandlerReader reader = new ClientHandlerReader(inObj, updateManager);
+			// writer thread if the user failed to log in
 			ClientHandlerWriter writer = new ClientHandlerWriter(outObj, updateManager, user_id);
-			Thread readerThread = new Thread(reader);
 			Thread writerThread = new Thread(writer);
     	
-			//Start reader and writer threads
-			readerThread.start();
 			writerThread.start();
 
     	//Main loop
     	while (true) {
-				// Busy wait until the reader thread is done, which means the client
-				// has logged out
-				if (!readerThread.isAlive()) {
-					// Stop the writer thread
+				Message msg = (Message) inObj.readObject();
+
+				// Pass any messages to the update manager
+				updateManager.handleMessage(msg);
+
+				// User has logged out so stop execution
+				if (msg.getType() == MessageType.Logout) {
 					writerThread.interrupt();
 
 					break;
@@ -106,7 +105,6 @@ public class ClientHandler implements Runnable {
 			}
 
     } catch (IOException e) {
-    	e.printStackTrace();
     } catch (ClassNotFoundException e) {
     	e.printStackTrace();
     } finally {
@@ -128,7 +126,6 @@ public class ClientHandler implements Runnable {
 	    System.out.println("users: " + users.hashCode() + "\n" +
 				   "authenticator: " + authenticator.hashCode() + "\n" +
 				   "rooms: " + rooms.hashCode() + "\n" +
-				   //"logger: " + logger.hashCode() + "\n" +
 				   "\n" ); 
   }
 }

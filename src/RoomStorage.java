@@ -50,7 +50,7 @@ public class RoomStorage {
 	public void removeUser(String roomId, String userId) {
 		Room room = rooms.get(roomId);
 		if (room != null)
-			room.addUser(userId);
+			room.removeUser(userId);
 	}
 	
 	public void setMessageStatus(String roomId, String messageId, MessageStatus status) {
