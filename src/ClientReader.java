@@ -1,8 +1,12 @@
 import java.io.EOFException;
+import java.io.File;
 import java.io.ObjectInputStream;
 import java.net.SocketException;
 import java.util.List;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 
 public class ClientReader implements Runnable {
@@ -47,12 +51,30 @@ public class ClientReader implements Runnable {
             case NewChat:
               // Update the room client side
               Room room = getRoomById(msg.getRoomId());
-
+              // Chime sound for when getting a new message
+              try {
+            	  if (!msg.getUserId().equals(this.currUserId)) {
+                	  try {
+                      	  String soundName = "notificationsound.wav";    
+                      	  AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
+                      	  Clip clip = AudioSystem.getClip();
+                      	  clip.open(audioInputStream);
+                      	  clip.start();
+                        }
+                        catch(Exception e) {
+                      	  
+                        }
+                  }
+              }
+              catch(NullPointerException e) {
+            	  
+              }
               room.addMessage(new ChatMessage(
                 msg.getUserId(),
                 msg.getContents(),
                 MessageStatus.Delivered
               ));
+              
 
               // Update the message display if the current room is the room
               // that the message was sent to
@@ -63,6 +85,7 @@ public class ClientReader implements Runnable {
                   + msg.getContents() + "\n"
                 );
               }
+              
 
               break;
             case NewRoom:
