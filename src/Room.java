@@ -10,13 +10,17 @@ public class Room implements Serializable {
 	private List<String> users;
 	private ChatHistory chatHistory;
 	private boolean empty;
+	private boolean hasNewMessage;
+	private boolean usersChanged;
 	
 	public Room(List<String> users) {
 		id = UUID.randomUUID().toString();
 		creationDate = new Date();
 		this.users = new ArrayList<String>();
+		chatHistory = new ChatHistory();
 		for (String userId : users) {
 			this.users.add(userId);
+			addMessage(new ChatMessage(userId, "added to the room", MessageStatus.Delivered));
 		}
 		chatHistory = new ChatHistory();
 		empty = this.users.isEmpty();		
@@ -54,6 +58,8 @@ public class Room implements Serializable {
 				chatHistory.addMessage(new ChatMessage(scanner.nextLine()));
 			}
 			empty = this.users.isEmpty();
+			hasNewMessage = false;
+			usersChanged = false;
 		} catch(Exception e) {
 			System.out.println("File not found");
 		}
@@ -80,23 +86,61 @@ public class Room implements Serializable {
 	public List<String> getUsers() {
 		return users;
 	}
+
+	public boolean hasNewMessage() {
+		if (hasNewMessage) {
+			hasNewMessage = false;
+			return true;
+		}
+
+		return hasNewMessage;
+	}
+
+	public boolean usersChanged() {
+		if (usersChanged) {
+			usersChanged = false;
+			return true;
+		}
+
+		return usersChanged;
+	}
 	
 	public List<ChatMessage> getMessages() {
 		return chatHistory.getMessages();
 	}
+
+	public String[] getMessagesAsArray() {
+		List<ChatMessage> messages = chatHistory.getMessages();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
+		String[] messagesAsArray = new String[messages.size()];
+
+		for (int i = 0; i < messages.size(); i++) {
+			ChatMessage msg = messages.get(i);
+			messagesAsArray[i] = "[" + simpleDateFormat.format(msg.getTimestamp()) + "] "
+				+ msg.getSender() + ": "
+				+ msg.contents();
+		}
+
+		return messagesAsArray;
+	}
 	
 	public void addUser(String userId) {
 		users.add(userId);
+		addMessage(new ChatMessage(userId, "added to the room", MessageStatus.Delivered));
+		usersChanged = true;
 		empty = users.isEmpty();
 	}
 	
 	public void removeUser(String userId) {
 		users.remove(userId);
+		addMessage(new ChatMessage(userId, "left the room", MessageStatus.Delivered));
+		usersChanged = true;
 		empty = users.isEmpty();
 	}
 	
 	public void addMessage(ChatMessage message) {
 		chatHistory.addMessage(message);
+		hasNewMessage = true;
 	}
 	
 	public void setMessageStatus(String messageId, MessageStatus status) {
@@ -118,5 +162,9 @@ public class Room implements Serializable {
 			file += message.toString() + '\n';
 		}
 		return file;
+	}
+
+	public ChatHistory getChatHistory() {
+		return chatHistory;
 	}
 }

@@ -8,4 +8,5 @@ public enum MessageType {
 	AddToRoom,
 	ChangeStatus,
 	UpdateUserStatus,
+	GetLogs,
 }
