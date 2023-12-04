@@ -14,16 +14,16 @@ public class RoomTest {
 
 	@Test
 	public void testNewConstructor() {
+		//create a room with some users
 		List<String> users = new ArrayList<String>();
 		users.add("user1");
 		users.add("user2");
 		users.add("user3");
-		
+		//ensure it has been created
 		Room room = new Room(users);
 		assertNotNull(room);
-		
+		//compare users in the room
 		List<String> userList = room.getUsers();
-		
 		for (int i = 0; i < 3; i++) {
 			assertEquals(users.get(i), userList.get(i));
 		}
@@ -59,6 +59,7 @@ public class RoomTest {
 	
 	@Test
 	public void testTitleConstructor() {
+		//sample room with users
 		List<String> users = new ArrayList<String>();
 		users.add("user1");
 		users.add("user2");
@@ -113,10 +114,9 @@ public class RoomTest {
 		Room room = new Room(file);
 		
 		assertNotNull(room);
-				
+		//compare users
 		String users[] = {"user1", "user2"};
 		List<String> userList = room.getUsers();
-		
 		for (int i = 0; i < 2; i++) {
 			assertEquals(users[i], userList.get(i));
 		}
@@ -138,13 +138,13 @@ public class RoomTest {
 			fail("Failed to open file");
 		}
 		Room room = new Room(file);
-		
+		//remove user from room
 		room.removeUser("user1");
-		
+		//ensure user list is correct
 		List<String> users = room.getUsers();
 		assertEquals(users.size(), 1);
 		assertEquals(users.get(0), "user2");
-		
+		//remove last remaining user and ensure room is empty
 		room.removeUser("user2");
 		
 		users = room.getUsers();
@@ -162,9 +162,9 @@ public class RoomTest {
 			fail("Failed to open file");
 		}
 		Room room = new Room(file);
-		
+		//add the user
 		room.addUser("long name it user with spaces");
-		
+		//ensure the user list has been updated
 		String users[] = {"user1", "user2", "long name it user with spaces"};
 		List<String> roomUsers = room.getUsers();
 		assertEquals(roomUsers.size(), 3);
@@ -172,10 +172,4 @@ public class RoomTest {
 			assertEquals(roomUsers.get(i), users[i]);
 		}
 	}
-	
-	@Test
-	public void testAddMessage() {
-		
-	}
-
 }
