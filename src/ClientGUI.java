@@ -1,6 +1,5 @@
 import java.util.*;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -21,6 +20,10 @@ public class ClientGUI implements Runnable {
   private User currUser;
   private String userId;
 
+  JTextField searchField;
+  JButton searchBtn;
+  private boolean isSearching;
+
   private JList<String> roomsDisplay;
   private JFrame mainWindow;
   private JFrame newRoomWindow;
@@ -28,6 +31,7 @@ public class ClientGUI implements Runnable {
   private JTextArea logDisplay;
   private JFrame logWindow;
 
+  private JLabel messageHistory;
   private JTextArea msgDisplay;
   private JTextArea usersDisplay;
 
@@ -44,7 +48,11 @@ public class ClientGUI implements Runnable {
     this.users = users;
     this.currUser = currUser;
     this.userId = currUser.getId();
+    this.isSearching = false;
 
+    searchField = new JTextField(30);
+    searchBtn = new JButton("Search");
+    messageHistory = new JLabel("Messages");
 
     createRoomsDisplay();
     createMsgDisplay();
@@ -122,6 +130,8 @@ public class ClientGUI implements Runnable {
     JPanel roomOptionsPanel = new JPanel(new FlowLayout());
     JPanel centerPanel = new JPanel();
     JPanel inputTextPanel = new JPanel();
+    JPanel searchPanel = new JPanel();
+    JPanel searchFieldPanel = new JPanel();
     JPanel headerPanel = new JPanel();
     JPanel textFieldPanel = new JPanel();
     JPanel userPanel = new JPanel();
@@ -132,6 +142,7 @@ public class ClientGUI implements Runnable {
 
     
     JTextField entryField = new JTextField(30);
+    searchField.setColumns(27);
     
     
 
@@ -148,12 +159,12 @@ public class ClientGUI implements Runnable {
     JLabel setStatusLabel = new JLabel("Set status");
     JLabel usersInRoomLabel = new JLabel("Users in room");
     JLabel roomList = new JLabel("Room List");
-    JLabel messageHistory = new JLabel("Messages");
 
 
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.setLocationRelativeTo(null);
 
+    searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
     inputTextPanel.setLayout(new BoxLayout(inputTextPanel, BoxLayout.X_AXIS));
 
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -161,7 +172,32 @@ public class ClientGUI implements Runnable {
 
 
     
-    
+    searchBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Room currentRoom = getCurrentRoom();
+
+        if (currentRoom != null) {
+          if (isSearching) {
+            isSearching = false;
+            searchBtn.setText("Search");
+            searchField.setText("");
+            searchField.setEditable(true);
+            updateMsgDisplay(currentRoom);
+          } else {
+            String text = searchField.getText();
+  
+            if (text.length() > 0) {
+              doSearch(currentRoom, text);
+              isSearching = true;
+              searchBtn.setText("Cancel");
+              searchField.setEditable(false);
+
+            }
+          }
+        }
+
+      }
+    });
 
     sendBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -246,11 +282,15 @@ public class ClientGUI implements Runnable {
     userPanel.add(setStatusLabel);
     userPanel.add(statusBox, BorderLayout.SOUTH);
     
+    searchFieldPanel.add(searchField);
+    searchPanel.add(searchFieldPanel);
+    searchPanel.add(searchBtn);
     textFieldPanel.add(entryField);
     inputTextPanel.add(textFieldPanel);
     inputTextPanel.add(sendBtn);
     
     centerPanel.add(messageHistory);
+    centerPanel.add(searchPanel);
     centerPanel.add(scrollPane, BorderLayout.NORTH);
     centerPanel.add(inputTextPanel, BorderLayout.SOUTH);
 
@@ -264,7 +304,6 @@ public class ClientGUI implements Runnable {
       });
 
       logBtn.setVisible(true);
-      //mainPanel.add(logBtn);
     }
     // Button sizes
     createRoomBtn.setPreferredSize(new Dimension(170,30));
@@ -272,7 +311,6 @@ public class ClientGUI implements Runnable {
     leaveRoomBtn.setPreferredSize(new Dimension(170,30));
     logBtn.setPreferredSize(new Dimension(170,30));
     
-    //sendBtn.setPreferredSize(new Dimension(80, 20));
     
     // FRAME AND PANEL SIZE SETTINGS
     // VERY PARTICULAR
@@ -297,7 +335,7 @@ public class ClientGUI implements Runnable {
     roomOptionsPanel.setPreferredSize(new Dimension	(180, 180));
     
     centerPanel.setPreferredSize(new Dimension		(400, 600));
-    scrollPane.setPreferredSize(new Dimension		(380, 470));
+    scrollPane.setPreferredSize(new Dimension		(380, 440));
     
     userPanel.setPreferredSize(new Dimension 		(200, 600));
     usersScrollPane.setPreferredSize(new Dimension 	(180, 400));
@@ -310,17 +348,11 @@ public class ClientGUI implements Runnable {
     headerPanel.setPreferredSize(new Dimension		(780, 30 ));
     
     roomPanel.setPreferredSize(new Dimension		(200, 500));
-    
-    //roomPanel.setBackground(Color.gray);
-    //roomScrollPanel.setBackground(Color.gray);
 
-    frame.getContentPane().setBackground(Color.blue);
     
-    //frame.getContentPane().add(headerPanel, BorderLayout.NORTH);
     frame.getContentPane().add(roomPanel, BorderLayout.WEST);
     frame.getContentPane().add(centerPanel, BorderLayout.CENTER);
     frame.getContentPane().add(userPanel, BorderLayout.EAST);
-    //frame.add(mainPanel);
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
@@ -336,10 +368,17 @@ public class ClientGUI implements Runnable {
   public void createNewRoomWindow() {
     JFrame frame = new JFrame("Create New Room");
     JPanel panel = new JPanel();
+    JPanel roomNamePanel = new JPanel();
+    JPanel searchUserPanel = new JPanel();
     JButton createBtn = new JButton("Create");
+    JButton searchUserBtn = new JButton("Search");
+    JLabel roomNameLabel = new JLabel  ("Room Name  ");
+    JLabel searchNameLabel = new JLabel("Search User");
+
     JCheckBox[] checkboxes = new JCheckBox[users.size()];
     JPanel userList = new JPanel();
-    JTextField roomNameField = new JTextField(32);
+    JTextField roomNameField = new JTextField(22);
+    JTextField searchUserField = new JTextField(22);
 
     roomNameField.setText(userId + "'s Room");
 
@@ -354,7 +393,49 @@ public class ClientGUI implements Runnable {
     userListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
     userList.setLayout(new BoxLayout(userList, BoxLayout.Y_AXIS));
+    
+    searchUserBtn.addActionListener(new ActionListener() {
+    	public void actionPerformed(ActionEvent e) {
+            
+            // 1) take the user input which is the users we want to search for
+            // 2) get all of the userIds with the search parameters
+            // 3) repaint the user list with the updated users
+            // 4) make the search box into "Cancel"
+            // 5) make the text field not editable
+            String input = searchUserField.getText();
+            
+            // Validate input size
+            if(!(input.length() > 0)) {
+            	return;
+            }
+            // if we have already searched;
+            if(searchUserBtn.getText().equals("Cancel")) {
+            	searchUserBtn.setText("Search");
+            	searchUserField.setEditable(true);
 
+            	for (int i = 0; i < users.size(); i++) {
+        			checkboxes[i].setVisible(true);
+
+            	}
+           	
+            }
+            // else search
+            else {
+            	searchUserBtn.setText("Cancel");
+            	searchUserField.setEditable(false);
+
+            	for(int i = 0; i < users.size(); i++) {
+            		if(users.get(i).getId().contains(input)) {
+            			checkboxes[i].setVisible(true);
+            		}
+            		else {
+            			checkboxes[i].setVisible(false);
+            		}
+            	}          	
+            }
+            
+    	}
+    });
     createBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ArrayList<String> userIds = new ArrayList<String>();
@@ -381,17 +462,30 @@ public class ClientGUI implements Runnable {
       }
     });
 
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.add(new JLabel("Room Name"));
-    panel.add(roomNameField);
-    panel.add(userListScrollPane);
-    panel.add(createBtn);
+    
+    roomNamePanel.add(roomNameLabel);
+    roomNamePanel.add(roomNameField);
+    
+    searchUserPanel.add(searchNameLabel);
+    searchUserPanel.add(searchUserField);
+    searchUserPanel.add(searchUserBtn);
+
+    //panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.add(roomNamePanel);
+    panel.add(searchUserPanel, BorderLayout.NORTH);
+    panel.add(userListScrollPane, BorderLayout.CENTER);
+    panel.add(createBtn, BorderLayout.SOUTH);
+    
+
+    frame.setPreferredSize(new Dimension(400, 460));
+    userListScrollPane.setPreferredSize(new Dimension(380, 300));
     
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     
     frame.add(panel);
     frame.pack();
     frame.setLocationRelativeTo(null);
+    frame.setResizable(false);
     frame.setVisible(false);
 
     newRoomWindow = frame;
@@ -405,12 +499,14 @@ public class ClientGUI implements Runnable {
   private void createLogWindow() {
     JFrame frame = new JFrame("Application Logs");
     JPanel panel = new JPanel();
-    JTextField usernameField = new JTextField(32);
-    JTextField roomIdField = new JTextField(32);
+    JPanel userIdPanel = new JPanel();
+    JPanel roomIdPanel = new JPanel();
+    JTextField usernameField = new JTextField(25);
+    JTextField roomIdField = new JTextField(25);
     JButton userLogsBtn = new JButton("Get User Logs");
     JButton roomLogsBtn = new JButton("Get Room Logs");
 
-    logDisplay = new JTextArea(20, 50);
+    logDisplay = new JTextArea(20, 75);
     logDisplay.setEditable(false);
     logDisplay.setLineWrap(true);
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -452,13 +548,29 @@ public class ClientGUI implements Runnable {
       }
     });
 
-    panel.add(new JLabel("Username"));
+    userLogsBtn.setPreferredSize(new Dimension(130, 25));
+    roomLogsBtn.setPreferredSize(new Dimension(130, 25));
+    
+    userIdPanel.add(new JLabel("Username"));
+    userIdPanel.add(usernameField, BorderLayout.WEST);
+    userIdPanel.add(userLogsBtn, BorderLayout.EAST);
+    
+    roomIdPanel.add(new JLabel("Room ID    "));
+    roomIdPanel.add(roomIdField, BorderLayout.WEST);
+    roomIdPanel.add(roomLogsBtn, BorderLayout.EAST);
+    
+    panel.add(userIdPanel);
+    panel.add(roomIdPanel);
+    panel.add(logScrollPane);
+/*
+ *  panel.add(new JLabel("Username"));
     panel.add(usernameField);
     panel.add(userLogsBtn);
     panel.add(new JLabel("Room ID"));
     panel.add(roomIdField);
     panel.add(roomLogsBtn);
-    panel.add(logScrollPane);
+ */
+
 
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.add(panel);
@@ -471,9 +583,16 @@ public class ClientGUI implements Runnable {
 
   private void createAddUserWindow() {
     JFrame frame = new JFrame("Add User");
-    JPanel panel = new JPanel();
+    JPanel topPanel = new JPanel();
     JButton addUserBtn = new JButton("Add User");
-    JTextField usernameField = new JTextField(32);
+    
+    JTextField usernameField = new JTextField(22);
+    
+    JTextArea userIdsArea = new JTextArea(15, 20);
+    
+    for (int i = 0; i < users.size(); i++) {
+    	userIdsArea.append(users.get(i).getId() + '\n');
+      }
 
     addUserBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -509,16 +628,45 @@ public class ClientGUI implements Runnable {
         }
       }
     });
+    usernameField.getDocument().addDocumentListener(new DocumentListener() {
+    	public void changedUpdate(DocumentEvent e) {
+    		updateText();
+    	}
+    	public void removeUpdate(DocumentEvent e) {
+    		updateText();
+    	}
+    	public void insertUpdate(DocumentEvent e) {
+    		updateText();
+    	}
+    	public void updateText() {
+    		userIdsArea.setText("");
+    		String input = usernameField.getText();
+    		for (int i = 0; i < users.size(); i++) {
+    			String name = users.get(i).getId();
+    			if(name.contains(input)) {
+    				userIdsArea.append(users.get(i).getId() + '\n');
+        		}
+        	}
+    	}
+    });
+    
 
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.add(new JLabel("Username"));
-    panel.add(usernameField);
-    panel.add(addUserBtn);
+    topPanel.add(new JLabel("Username"));
+    topPanel.add(usernameField, BorderLayout.NORTH);
+    topPanel.add(addUserBtn, BorderLayout.SOUTH);
+    
 
+    
+    frame.setPreferredSize(new Dimension(400,300));
+    topPanel.setPreferredSize(new Dimension(400,40));
+
+    
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    frame.add(panel);
+    frame.add(topPanel, BorderLayout.NORTH);
+    frame.add(userIdsArea);
     frame.pack();
     frame.setLocationRelativeTo(null);
+    frame.setResizable(false);
     frame.setVisible(false);
 
     addUserWindow = frame;
@@ -540,6 +688,12 @@ public class ClientGUI implements Runnable {
           Room currentRoom = getCurrentRoom();
           
           if (currentRoom != null) {
+            if (isSearching) {
+              isSearching = false;
+              searchBtn.setText("Search");
+              searchField.setText("");
+            }
+
             updateMsgDisplay(currentRoom);
             updateUserDisplay(currentRoom);
           }
@@ -633,6 +787,7 @@ public class ClientGUI implements Runnable {
 
   private void updateMsgDisplay(Room room) {
     msgDisplay.setText("");
+    messageHistory.setText(room.getTitle());
 
     String[] messages = room.getMessagesAsArray();
 
@@ -738,5 +893,37 @@ public class ClientGUI implements Runnable {
     }
 
     return false;
+  }
+
+  private void doSearch(Room room, String text) {
+    List<String> contents = new ArrayList<String>();
+    String[] messages = room.getMessagesAsArray();
+
+    if (text.contains("from_user:") && text.substring(0, 10).equals("from_user:")) {
+      // 11 is the length of "from_user:"
+      String user = text.substring(11);
+
+      for (String msg : messages) {
+        if (msg.contains(user)) {
+          contents.add(msg);
+        }
+      }
+    } else {
+      for (String msg : messages) {
+        if (msg.contains(text)) {
+          contents.add(msg);
+        }
+      }
+    }
+
+    msgDisplay.setText("");
+
+    if (contents.size() > 0) {
+      for (String msg : contents) {
+        msgDisplay.append(msg + "\n");
+      }
+    } else {
+      msgDisplay.append("No results found");
+    }
   }
 }
