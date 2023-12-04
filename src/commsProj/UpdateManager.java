@@ -90,28 +90,36 @@ public class UpdateManager {
 
         break;
       case AddToRoom:
-        logger.addUserToRoom(message.getContents(), message.getRoomId());
+        String userToAdd = message.getContents();
+        String roomId = message.getRoomId();
 
-        // That user needs that room to be sent to them
-        Room roomToSend = roomStorage.getRoomById(message.getRoomId());
-        List<Room> roomsToSendToUser = new ArrayList<Room>();
-        roomsToSendToUser.add(roomToSend);
-        Message roomUpdate = new Message(MessageType.NewRoom);
-        roomUpdate.setRooms(roomsToSendToUser);
-        updatesByUserId.get(message.getContents()).add(roomUpdate);
+        logger.addUserToRoom(userToAdd, roomId);
+
+        // That user needs that room to be sent to them if they are online
+        User userToAddObj = userStorage.getUserById(userToAdd);
+        Room roomToSend = roomStorage.getRoomById(roomId);
+
+        if (userToAddObj.getStatus() != UserStatus.Offline) {
+          List<Room> roomsToSendToUser = new ArrayList<Room>();
+          roomsToSendToUser.add(roomToSend);
+          Message roomUpdate = new Message(MessageType.NewRoom);
+          roomUpdate.setUserId(sender);
+          roomUpdate.setRooms(roomsToSendToUser);
+          updatesByUserId.get(userToAdd).add(roomUpdate);
+        }
 
         // And then send the user to everyone else in the room
         update = new Message(MessageType.AddToRoom);
         update.setUserId(sender);
-        update.setContents(message.getContents());
-        update.setRoomId(message.getRoomId());
+        update.setContents(userToAdd);
+        update.setRoomId(roomId);
         update.setTimestamp(getTime());
 
         for (String userId : roomToSend.getUsers()) {
           User user = userStorage.getUserById(userId);
           UserStatus status = user.getStatus();
 
-          if (!userId.equals(message.getContents()) && status != UserStatus.Offline) {
+          if (!userId.equals(userToAdd) && status != UserStatus.Offline) {
             updatesByUserId.get(userId).add(update);
           }
         }
