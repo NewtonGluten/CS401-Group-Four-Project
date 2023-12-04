@@ -1,8 +1,0 @@
-Group 4 - Communication
-12-03-23 16:48:33
-aaron,ben,jagjot,kosta,
-[ea20cb09-b0ec-407a-ba37-47d1523138a1][kosta@12-03-23 16:48:45]:For our presentation, do we want to also generate some extra users/rooms/chat history?
-[631c2cc8-0e73-4418-8ec5-584fe6031ec5][aaron@12-03-23 16:49:06]:the extra rooms and history yeah we should
-[0d18b4e2-63e1-4629-a6ca-04aaeaa9cca9][aaron@12-03-23 16:49:11]:to demonstrate multiple rooms and the flows of leaving and adding to rooms
-[9cc0947a-0532-474b-98dc-b04fdd4052fc][aaron@12-03-23 16:49:16]:and also so viewing logs/using the search function isn't super bare
-[8c32314a-9181-4ec5-85b0-3afa31af861a][kosta@12-03-23 16:49:21]:IMO it would be funny if we created groups that mimicked the irl groups and then made fake chats using everyones real name
