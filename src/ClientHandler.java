@@ -38,8 +38,6 @@ public class ClientHandler implements Runnable {
 		is_logged_in = false;
 		currUser = null;
 		
-		//TODO: remove
-		printDebug();
     
     try {
     	
