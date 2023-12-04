@@ -12,7 +12,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	UserStorageTest.class, 
 	AuthenticatorTest.class,
 	RoomStorageTest.class,
-	//MessageTest.class
+	MessageTest.class
 })
 
 public class Test {
