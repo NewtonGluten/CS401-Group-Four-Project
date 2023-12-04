@@ -1,0 +1,20 @@
+Group 5 - Black Jack
+12-03-23 16:52:01
+Celeste,Quan,Santiago,Nikola,
+[98faf3f1-c021-44d1-8d17-8ab6d08bd25e][Nikola@12-03-23 16:53:09]:Morning team! Ready to jump into another day of blackjack coding. How's everyone doing?
+[92afdee7-b8a7-4516-90a1-2ee3be7d2fd6][Santiago@12-03-23 16:53:16]:Morning, Nikola! All good here. I've been working on the card animations. Celeste, any updates on the betting system?
+[df536e86-3d4e-4a3f-94af-74b2f0b3df38][Celeste@12-03-23 16:53:20]:Hey Santiago! Yeah, I've got the basic structure for the betting system in place. Quan, mind giving it a review when you get a chance?
+[39128bd0-41b8-40b6-81ab-e7892994a0cd][Quan@12-03-23 16:53:24]:Sure thing, Celeste! I'll add it to my to-do list. Nikola, any progress on the game logic for splitting pairs?
+[41f8f4cc-d255-4a8c-b2ab-4d9acebd8ad8][Nikola@12-03-23 16:53:28]:Getting there, Quan! I've been working through the edge cases. It's trickier than I thought, but I'll have a pull request for you by the end of the day.
+[aed53c28-850a-4194-961a-99ec37e6fd26][Santiago@12-03-23 16:53:32]:Awesome. Once we get the splitting logic down, Celeste, we can fine-tune the betting animations to sync with the gameplay. What do you think?
+[c9b0c59e-6f4c-4c18-998a-c53475dfad7b][Celeste@12-03-23 16:53:36]:Good call, Santiago! That should enhance the overall user experience. Quan, after you review the betting system, could you also take a look at the animations?
+[db438382-39e9-4b80-b3e5-9e5d3f1930f9][Quan@12-03-23 16:53:40]:Definitely, Celeste. I'm on it.
+[4eda568d-ee18-40c2-aa37-5ae68940c906][Nikola@12-03-23 16:53:45]:Quick heads up, team. I've spotted a bug in the dealer logic. Santiago, mind taking a look? I'll assign it to you on our task board.
+[49dc04cb-9822-4c72-8089-ffa48069b7b0][Santiago@12-03-23 16:53:53]:No problem, Nikola! I'll tackle it right after I finish up the card animations.
+[d8dae69e-d41c-4868-aec4-4ccc786df4f7][Celeste@12-03-23 16:53:59]:Speaking of animations, Santiago, do you think we should add some sound effects? It might add a nice touch to the game.
+[6fe2a836-6546-488d-a11d-06f63a3b0641][Quan@12-03-23 16:54:03]:Good idea, Celeste! I've got some experience with audio libraries. I can look into integrating sound effects later today.
+[93de1543-cd30-4e03-b866-c9f3abc31afa][Nikola@12-03-23 16:54:07]:Sounds like a plan, Quan. Let's keep it subtle, though—we don't want to overwhelm players with noise.
+[b4890e62-11d9-4c57-b560-8b7a3e125f09][Santiago@12-03-23 16:54:12]:Agreed. I'll make sure the animations and sound effects complement each other without being distracting.
+[627eaaf0-dc68-4381-ba68-3f9c65d18e51][Celeste@12-03-23 16:54:16]:Awesome teamwork, everyone! We're making great progress. Quan, let me know if you need any help with the betting system.
+[8678b68d-b095-470f-93fc-d1ade56c0ca1][Quan@12-03-23 16:54:20]:Will do, Celeste! Thanks.
+[2fdb89c8-76af-49dd-a1e2-5a598e806500][Nikola@12-03-23 16:54:26]:Alright, team, let's reconvene in a few hours for a quick stand-up. Keep up the good work!  
