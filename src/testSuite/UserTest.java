@@ -7,7 +7,7 @@ import org.junit.Test;
 public class UserTest {
 	
 	@Test
-	public void testConstrutor() {
+	public void testConstructor() {
 		//test normal user creation
 		User user = new User("bob", "password", UserRole.Normal);
 		assertNotNull(user);
