@@ -1,4 +1,3 @@
-package commsProj;
 import java.util.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -142,8 +141,8 @@ public class ClientGUI implements Runnable {
     JScrollPane usersScrollPane = new JScrollPane(usersDisplay);
 
     
-    JTextField entryField = new JTextField(30);
-    searchField.setColumns(27);
+    JTextField entryField = new JTextField(27);
+    searchField.setColumns(25);
     
     
 
@@ -335,8 +334,8 @@ public class ClientGUI implements Runnable {
     roomScrollPanel.setPreferredSize(new Dimension	(180, 380));
     roomOptionsPanel.setPreferredSize(new Dimension	(180, 180));
     
-    centerPanel.setPreferredSize(new Dimension		(400, 600));
-    scrollPane.setPreferredSize(new Dimension		(380, 440));
+    centerPanel.setPreferredSize(new Dimension		(380, 600));
+    scrollPane.setPreferredSize(new Dimension		(360, 440));
     
     userPanel.setPreferredSize(new Dimension 		(200, 600));
     usersScrollPane.setPreferredSize(new Dimension 	(180, 400));
@@ -585,6 +584,7 @@ public class ClientGUI implements Runnable {
   private void createAddUserWindow() {
     JFrame frame = new JFrame("Add User");
     JPanel topPanel = new JPanel();
+    JPanel bottomPanel = new JPanel();
     JButton addUserBtn = new JButton("Add User");
     
     JTextField usernameField = new JTextField(22);
@@ -656,15 +656,17 @@ public class ClientGUI implements Runnable {
     topPanel.add(usernameField, BorderLayout.NORTH);
     topPanel.add(addUserBtn, BorderLayout.SOUTH);
     
-
+    bottomPanel.add(userIdsArea);
     
-    frame.setPreferredSize(new Dimension(400,300));
+    frame.setPreferredSize(new Dimension(400,330));
     topPanel.setPreferredSize(new Dimension(400,40));
+    bottomPanel.setPreferredSize(new Dimension(380,250));
+    userIdsArea.setPreferredSize(new Dimension(370,230));
 
     
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     frame.add(topPanel, BorderLayout.NORTH);
-    frame.add(userIdsArea);
+    frame.add(bottomPanel);
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setResizable(false);
