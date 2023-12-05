@@ -11,8 +11,6 @@ public class ClientHandler implements Runnable {
 	private UpdateManager updateManager;
   private boolean is_logged_in;
   private String user_id;
-  
-  //TODO: review. Shouldn't the client handler have the user object rather than just having the user id?
   private User currUser;
     
   
