@@ -6,3 +6,9 @@ aaron,ben,jagjot,kosta,
 [0d18b4e2-63e1-4629-a6ca-04aaeaa9cca9][aaron@12-03-23 16:49:11]:to demonstrate multiple rooms and the flows of leaving and adding to rooms
 [9cc0947a-0532-474b-98dc-b04fdd4052fc][aaron@12-03-23 16:49:16]:and also so viewing logs/using the search function isn't super bare
 [8c32314a-9181-4ec5-85b0-3afa31af861a][kosta@12-03-23 16:49:21]:IMO it would be funny if we created groups that mimicked the irl groups and then made fake chats using everyones real name
+[bbe813b0-77f1-4717-a5b1-162ef217fe95][ben@12-04-23 11:58:06]:test
+[9ac74939-21c4-43dc-9977-9db1205d4a46][ben@12-04-23 11:58:08]:sadfa 
+[92a30a65-a718-4d1b-8d5a-4c2338c279d7][ben@12-04-23 11:58:09]:a sdfasd
+[fce7e355-5a29-44e9-ab64-f7f7af2ad937][ben@12-04-23 11:58:09]:a sdfa s
+[123e1e69-520e-42e3-b33c-790643884e94][ben@12-04-23 11:58:10]:asdf asd f
+[21b7efa4-facf-4647-9f68-7a40090ff127][ben@12-04-23 11:58:14]:asd fasd
