@@ -14,7 +14,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	UserStorageTest.class, 
 	AuthenticatorTest.class,
 	RoomStorageTest.class,
-	MessageTest.class
+	MessageTest.class,
+	LoggerTest.class
 })
 
 public class Test {

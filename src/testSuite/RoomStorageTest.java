@@ -1,8 +1,14 @@
-package commsProj;
+package testSuite;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 import org.junit.Test;
+
+import commsProj.ChatMessage;
+import commsProj.MessageStatus;
+import commsProj.Room;
+import commsProj.RoomStorage;
+
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
