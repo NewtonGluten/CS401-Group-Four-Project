@@ -21,10 +21,9 @@ public class UserStorage {
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
 				String credentials[] = line.split(":");
+				// skip corrupt data
 				if (credentials.length != 3)
-					//TODO: what should we do for corrupt data
 					continue;
-				//TODO: how should we store user roles
 				users.putIfAbsent(credentials[0], new User(
 						credentials[0], 
 						credentials[1],
@@ -90,7 +89,6 @@ public class UserStorage {
 			userIdRooms.get(userId).remove(roomId);
 	}
 	
-	//TODO: does this involve any thread updates or are we doing that outside
 	public void setUserStatus(String userId, UserStatus status) {
 		User user = users.get(userId);
 		if (user == null)

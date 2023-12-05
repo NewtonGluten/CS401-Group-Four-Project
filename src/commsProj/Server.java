@@ -42,7 +42,6 @@ class Server {
         }
         
         
-        //TODO: remove debugging code
         System.out.println("New client connected " + client + "\n");
         
         
