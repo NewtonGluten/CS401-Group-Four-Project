@@ -1,0 +1,9 @@
+Group 4 - Presentation Room
+12-04-23 14:00:26
+AaronPresentation,BenPresentation,JagjotPresentation,KostaPresentation,
+[2e92bef1-19da-4d3e-b782-941164493f34][KostaPresentation@12-04-23 14:27:59]:Hey guys, how's it going?
+[2c5ab9fc-4a67-42e1-9b26-2560c1cfe914][BenPresentation@12-04-23 14:29:39]:Doing good. I just really hope that our live demo works.
+[cc830977-f550-41d5-b16d-7abe8e729559][Christopher@12-04-23 14:59:54]:added to the room
+[e372aad6-2af0-401b-94f9-59e323bdf105][KostaPresentation@12-04-23 15:13:49]:Hey professor, we need help with this project.
+[35daa800-95e5-404e-bd00-6e1dc4c330b0][Christopher@12-04-23 15:15:22]:git good scrub
+[bbcb15b8-2eaf-4431-9d1f-3e9c1caf51a3][Christopher@12-04-23 15:18:08]:left the room
