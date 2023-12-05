@@ -1,8 +1,11 @@
+package commsProj;
 import java.util.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Panel;
+import java.awt.Toolkit;
 import java.awt.event.*;
 import javax.swing.event.*;
 import java.io.IOException;
@@ -35,6 +38,7 @@ public class ClientGUI implements Runnable {
   private JTextArea msgDisplay;
   private JTextArea usersDisplay;
 
+  private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
   public ClientGUI(
     ObjectInputStream objIn,
     ObjectOutputStream objOut,
@@ -141,7 +145,7 @@ public class ClientGUI implements Runnable {
     JScrollPane usersScrollPane = new JScrollPane(usersDisplay);
 
     
-    JTextField entryField = new JTextField(27);
+    JTextField entryField = new JTextField(23);
     searchField.setColumns(25);
     
     
@@ -305,11 +309,7 @@ public class ClientGUI implements Runnable {
 
       logBtn.setVisible(true);
     }
-    // Button sizes
-    createRoomBtn.setPreferredSize(new Dimension(170,30));
-    addUserBtn.setPreferredSize(new Dimension(170,30));
-    leaveRoomBtn.setPreferredSize(new Dimension(170,30));
-    logBtn.setPreferredSize(new Dimension(170,30));
+   
     
     
     // FRAME AND PANEL SIZE SETTINGS
@@ -329,8 +329,27 @@ public class ClientGUI implements Runnable {
     // |          |                                |              |
     // ------------------------------------------------------------
     //
-    frame.setPreferredSize(new Dimension			(800, 600));
+    //frame.setPreferredSize(new Dimension (800,600));
+    int frameWidth = ((screenSize.width /48) * 25);
+    int frameHeight = ((screenSize.height /36) * 25);
+    int sideWidth = ((frameWidth /40) * 9);
+    
+  
+    
+    //int sideHeight = ((frameWidth /4) * 3);
+    //System.out.println(screenSize);
+    //System.out.println(frameWidth + " " + frameHeight);
 
+    // START OF EXPLICIT DIMENSIONS
+    
+     // Button sizes
+    createRoomBtn.setPreferredSize(new Dimension(170,30));
+    addUserBtn.setPreferredSize(new Dimension(170,30));
+    leaveRoomBtn.setPreferredSize(new Dimension(170,30));
+    logBtn.setPreferredSize(new Dimension(170,30));
+    
+    frame.setPreferredSize(new Dimension(800,600));
+    
     roomScrollPanel.setPreferredSize(new Dimension	(180, 380));
     roomOptionsPanel.setPreferredSize(new Dimension	(180, 180));
     
@@ -341,13 +360,41 @@ public class ClientGUI implements Runnable {
     usersScrollPane.setPreferredSize(new Dimension 	(180, 400));
     statusBox.setPreferredSize(new Dimension		(180, 40));
     
+    headerPanel.setPreferredSize(new Dimension		(780, 30));
+    
+    roomPanel.setPreferredSize(new Dimension        (200, 400));
+    
+    // END OF EXPLICIT DIMENSIONS
+    
+    // START OF DIMENSIONS BASED ON SCREEN SIZE
+    /*
+      // Button sizes
+    createRoomBtn.setPreferredSize(new Dimension(170,30));
+    addUserBtn.setPreferredSize(new Dimension(170,30));
+    leaveRoomBtn.setPreferredSize(new Dimension(170,30));
+    logBtn.setPreferredSize(new Dimension(170,30));
+    
+    frame.setPreferredSize(new Dimension (frameWidth,frameHeight));
+
+    roomScrollPanel.setPreferredSize(new Dimension	(sideWidth, ((frameHeight /30) * 19)));
+    roomOptionsPanel.setPreferredSize(new Dimension	(sideWidth, ((frameHeight /10) * 3)));
+    
+    centerPanel.setPreferredSize(new Dimension		(((frameWidth /40) * 19), frameHeight));
+    scrollPane.setPreferredSize(new Dimension		(((frameWidth / 20) * 9), ((frameHeight /15) * 11)));
+    
+    userPanel.setPreferredSize(new Dimension 		(sideWidth, frameHeight));
+    usersScrollPane.setPreferredSize(new Dimension 	(sideWidth, ((frameHeight /3) * 2)));
+    statusBox.setPreferredSize(new Dimension		(sideWidth, ((frameHeight /15) * 15)));
     
     
     
+    headerPanel.setPreferredSize(new Dimension		(((frameWidth /40) * 39), ((frameHeight /20) * 1)));
     
-    headerPanel.setPreferredSize(new Dimension		(780, 30 ));
+    roomPanel.setPreferredSize(new Dimension        (((frameWidth /4) * 1), ((frameHeight /4) * 3)));
+    */
     
-    roomPanel.setPreferredSize(new Dimension		(200, 500));
+    
+    // END OF DIMENSIONS BASED ON SCREEN SIZE
 
     
     frame.getContentPane().add(roomPanel, BorderLayout.WEST);
@@ -468,17 +515,25 @@ public class ClientGUI implements Runnable {
     
     searchUserPanel.add(searchNameLabel);
     searchUserPanel.add(searchUserField);
-    searchUserPanel.add(searchUserBtn);
+    //searchUserPanel.add(searchUserBtn);
 
     //panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     panel.add(roomNamePanel);
     panel.add(searchUserPanel, BorderLayout.NORTH);
+    panel.add(searchUserBtn);
     panel.add(userListScrollPane, BorderLayout.CENTER);
     panel.add(createBtn, BorderLayout.SOUTH);
     
 
-    frame.setPreferredSize(new Dimension(400, 460));
+    panel.setPreferredSize(new Dimension(400, 460));
+    //frame.setPreferredSize(new Dimension(400, 460));
+    roomNamePanel.setPreferredSize(new Dimension(380, 30));
+    searchUserPanel.setPreferredSize(new Dimension(380, 30));
     userListScrollPane.setPreferredSize(new Dimension(380, 300));
+    createBtn.setPreferredSize(new Dimension(100, 20));
+    searchUserBtn.setPreferredSize(new Dimension(100, 20));
+
+
     
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     
@@ -583,6 +638,7 @@ public class ClientGUI implements Runnable {
 
   private void createAddUserWindow() {
     JFrame frame = new JFrame("Add User");
+    JPanel panel = new JPanel();
     JPanel topPanel = new JPanel();
     JPanel bottomPanel = new JPanel();
     JButton addUserBtn = new JButton("Add User");
@@ -653,20 +709,25 @@ public class ClientGUI implements Runnable {
     
 
     topPanel.add(new JLabel("Username"));
-    topPanel.add(usernameField, BorderLayout.NORTH);
-    topPanel.add(addUserBtn, BorderLayout.SOUTH);
+    topPanel.add(usernameField, BorderLayout.WEST);
+    topPanel.add(addUserBtn, BorderLayout.EAST);
     
     bottomPanel.add(userIdsArea);
     
-    frame.setPreferredSize(new Dimension(400,330));
+    //frame.setPreferredSize(new Dimension(400,330));
     topPanel.setPreferredSize(new Dimension(400,40));
     bottomPanel.setPreferredSize(new Dimension(380,250));
     userIdsArea.setPreferredSize(new Dimension(370,230));
+    
+    addUserBtn.setPreferredSize(new Dimension(100,25));
+    
+    panel.setPreferredSize(new Dimension(420,330));
 
     
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    frame.add(topPanel, BorderLayout.NORTH);
-    frame.add(bottomPanel);
+    panel.add(topPanel, BorderLayout.NORTH);
+    panel.add(bottomPanel, BorderLayout.SOUTH);
+    frame.add(panel);
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setResizable(false);
