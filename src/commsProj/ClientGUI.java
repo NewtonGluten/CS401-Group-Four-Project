@@ -643,7 +643,7 @@ public class ClientGUI implements Runnable {
     JPanel bottomPanel = new JPanel();
     JButton addUserBtn = new JButton("Add User");
     
-    JTextField usernameField = new JTextField(22);
+    JTextField usernameField = new JTextField(17);
     
     JTextArea userIdsArea = new JTextArea(15, 20);
     
